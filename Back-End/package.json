@@ -1,0 +1,24 @@
+{
+  "name": "si-25-7a",
+  "version": "1.0.0",
+  "description": "- [Design no Figma](https://www.figma.com/design/0Pmzh1nYdpymAjBh1MBWr6/2a-avalia%C3%A7%C3%A3o?node-id=0-1&t=nkLeKsB2xrBDi0uT-1)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Welquer/si-25-7a.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Welquer/si-25-7a/issues"
+  },
+  "homepage": "https://github.com/Welquer/si-25-7a#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.1"
+  }
+}

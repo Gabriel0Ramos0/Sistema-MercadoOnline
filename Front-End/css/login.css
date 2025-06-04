@@ -1,0 +1,29 @@
+#paginaLogin {
+    width: 100%;
+    height: 100vh;
+    background-color: #7749f8;
+    flex-direction: column;
+}
+
+#formLogin {
+    bottom: 15px;
+    gap: 2px;
+    position: relative;
+    flex-direction: column;
+}
+
+#imagemLogin {
+    width: 350px;
+    height: 350px;
+    filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.3));
+}
+
+#email, #senha {
+    width: 200px;
+}
+
+#entrar {
+    width: 150px;
+    padding: 7px;
+    margin-top: 10px;
+}
