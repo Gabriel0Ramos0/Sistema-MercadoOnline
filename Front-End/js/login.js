@@ -45,11 +45,13 @@ async function realizarLogin() {
 function novaConta() {
     document.getElementById("fundoModal").style.display = "flex";
     document.getElementById("novaConta").style.display = "block";
+    document.getElementById("acessoAdministrativo").style.display = "none";
 }
 
 function voltarCadastro() {
     document.getElementById("fundoModal").style.display = "none";
     document.getElementById("novaConta").style.display = "none";
+    document.getElementById("acessoAdministrativo").style.display = "block";
 }
 
 async function verificarConta() {

@@ -7,7 +7,7 @@
 
 #formLogin {
     bottom: 15px;
-    gap: 2px;
+    gap: 7px;
     position: relative;
     flex-direction: column;
 }
@@ -18,13 +18,17 @@
     filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.3));
 }
 
-#email,
-#senha {
+#emailClienteAcesso,
+#senhaClienteAcesso {
     width: 200px;
 }
 
+#email,
+#senha {
+    width: 100px;
+}
+
 #botoesLogin {
-    margin-top: 7px;
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -78,4 +82,41 @@
     gap: 5px;
     font-weight: bold;
     font-size: 15px;
+}
+
+#acessoAdministrativo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    padding: 8px 12px;
+    background-color: #7749f8;
+    border-bottom-right-radius: 100px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: width 0.5s ease, background-color 0.3s;
+}
+
+#acessoAdministrativo:hover {
+    width: 400px;
+    background-color: #5c37cc;
+}
+
+#acessoAdministrativo h3 {
+    margin: 20px 0 0 20px;
+}
+
+#acessoAdministrativo #conteudoAdm {
+    opacity: 0;
+    transition: opacity 0.3s;
+    padding: 20px;
+    padding-top: 10px;
+}
+
+#acessoAdministrativo:hover #conteudoAdm {
+    opacity: 1;
+}
+
+#formAcessoAdmin {
+    gap: 10px;
 }
