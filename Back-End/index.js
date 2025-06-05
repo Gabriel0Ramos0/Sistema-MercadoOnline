@@ -355,14 +355,14 @@ server.get('/cliente', async (req, res) => {
 
 // Acessar a tabela de transação
 server.get('/transacao', async (req, res) => {
-  const idUsuario = req.query.id_usuario;
+  const id_cliente = req.query.id_usuario;
   try {
-    if (!idUsuario) {
+    if (!id_cliente) {
       return res.status(400).send("Parâmetro 'idtransacao' é obrigatório.");
     }
     const [rows] = await pool.query(`
       SELECT * from transacao   
-      WHERE id_usuario = ?   
+      WHERE id_cliente = ?   
     `, [idUsuario]);
 
     res.json(rows);
