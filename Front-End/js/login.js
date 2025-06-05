@@ -60,4 +60,25 @@ function aviso(mensagem, tipo) {
     }, 5000);
 }
 
+let konamiCode = [
+    "ArrowUp", "ArrowUp",
+    "ArrowDown", "ArrowDown",
+    "ArrowLeft", "ArrowRight",
+    "ArrowLeft", "ArrowRight"
+];
+
+let inputSequence = [];
+
+window.addEventListener("keydown", (event) => {
+    inputSequence.push(event.key);
+    if (inputSequence.length > konamiCode.length) {
+        inputSequence.shift();
+    }
+
+    if (JSON.stringify(inputSequence) === JSON.stringify(konamiCode)) {
+        document.body.style.filter = "hue-rotate(300deg) saturate(100%)";
+        inputSequence = [];
+    }
+});
+
 export { realizarLogin, aviso }
