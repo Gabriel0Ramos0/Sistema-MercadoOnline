@@ -487,7 +487,7 @@ server.post('/validar-login-cliente', async (req, res) => {
       if (!cliente || !cliente.length) {
           return res.status(400).json({ sucesso: false, mensagem: 'cliente não encontrado.' });
       }
-      const [transacao] = await pool.query('SELECT * FROM transacao WHERE id_cliente = ?', [transacao[0].id_cliente]);
+      const [transacao] = await pool.query('SELECT * FROM transacao WHERE id_cliente = ?', [cliente[0].id]);
 
       // Comparar a senha fornecida com a senha armazenada no banco de dados
       if (senha === usuario[0].senha) {
