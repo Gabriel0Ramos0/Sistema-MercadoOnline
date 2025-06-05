@@ -18,12 +18,64 @@
     filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.3));
 }
 
-#email, #senha {
+#email,
+#senha {
     width: 200px;
 }
 
-#entrar {
-    width: 150px;
-    padding: 7px;
-    margin-top: 10px;
+#botoesLogin {
+    margin-top: 7px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#entrar,
+#criarConta {
+    width: auto;
+    padding: 10px;
+}
+
+#novaConta {
+    width: 400px;
+    max-width: 90%;
+    box-sizing: border-box;
+    position: absolute;
+    border-radius: 10px;
+    background-color: white;
+    animation: fadeIn 0.3s;
+    font-family: Arial, Helvetica, sans-serif;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#novaConta h3 {
+    height: 35px;
+    margin: 0px;
+    margin-bottom: 5px;
+    background-color: #7749f8;
+    text-align: center;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    padding-top: 15px;
+}
+
+#formCadastroCliente {
+    display: flex;
+    flex-direction: column;
+    padding: 35px;
+    padding-top: 0px;
+    padding-bottom: 25px;
+    color: black;
+}
+
+#formCadastroCliente input {
+    width: 95%;
+}
+
+.fcc {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-weight: bold;
+    font-size: 15px;
 }

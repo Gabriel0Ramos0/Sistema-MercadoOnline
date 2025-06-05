@@ -42,6 +42,54 @@ async function realizarLogin() {
     }
 }
 
+function novaConta() {
+    document.getElementById("fundoModal").style.display = "flex";
+    document.getElementById("novaConta").style.display = "block";
+}
+
+function voltarCadastro() {
+    document.getElementById("fundoModal").style.display = "none";
+    document.getElementById("novaConta").style.display = "none";
+}
+
+async function verificarConta() {
+    const nome = document.getElementById("nomeCliente").value.trim();
+    const email = document.getElementById("emailCliente").value.trim();
+    const senha = document.getElementById("senhaCliente").value;
+    const confirmarSenha = document.getElementById("confirmarSenha").value;
+
+    if (!nome || !email || !senha) {
+        aviso("Preencha todos os campos!", "alerta");
+        return;
+    } else if (senha.length < 6) {
+        aviso("A senha deve ter pelo menos 6 caracteres!", "alerta");
+        return;
+    } else if (senha !== confirmarSenha) {
+        aviso("As senhas não coincidem!", "alerta");
+        return;
+    }
+
+    try {
+        const resposta = await fetch("http://localhost:3000/criar-conta-cliente", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ nome, email, senha })
+        });
+        const resultado = await resposta.json();
+        if (resultado && resultado.sucesso) {
+            aviso("Conta criada com sucesso!", "sucesso");
+            // aguardar a confirmação pelo email
+        } else {
+            aviso("Erro ao criar conta. Tente novamente.", "erro");
+        }
+    } catch (erro) {
+        console.error("Erro ao criar conta:", erro);
+        aviso("Erro de conexão com o servidor.", "erro");
+    }
+}
+
 function aviso(mensagem, tipo) {
     const divAviso = document.getElementById("aviso");
     divAviso.style.display = "flex";
@@ -81,4 +129,4 @@ window.addEventListener("keydown", (event) => {
     }
 });
 
-export { realizarLogin, aviso }
+export { realizarLogin, novaConta, voltarCadastro, verificarConta, aviso }

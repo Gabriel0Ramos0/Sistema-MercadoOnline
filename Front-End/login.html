@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src http://localhost:3000 http://127.0.0.1:5500 ws:; img-src 'self' data:;">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src http://localhost:3000 http://127.0.0.1:5500 ws:; img-src 'self' data:;">
     <title>Login</title>
     <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="./css/login.css">
@@ -16,7 +17,25 @@
         <div id="formLogin" class="-flex">
             <input id="email" type="text" placeholder="E-mail" required>
             <input id="senha" type="password" placeholder="Senha" name="senha" required>
-            <button id="entrar" class="botao roxo">Entrar</button>
+            <div id="botoesLogin">
+                <button id="entrar" class="botao roxo">Entrar</button>
+                <button id="criarConta" class="botao roxo">Criar Conta</button>
+            </div>
+        </div>
+        <div id="fundoModal" class="-flex" style="display: none">
+            <div id="novaConta" class="-flex" style="display: none;">
+                <h3>Nova Conta Cliente</h3>
+                <div id="formCadastroCliente">
+                    <p class="fcc">Nome: <input id="nomeCliente" type="text" placeholder="Nome" required></p>
+                    <p class="fcc">E-mail: <input id="emailCliente" type="email" placeholder="E-mail" required></p>
+                    <p class="fcc">Senha: <input id="senhaCliente" type="password" placeholder="Senha" required></p>
+                    <p class="fcc">Confirmar Senha: <input id="confirmarSenha" type="password" placeholder="Confirmar Senha" required></p>
+                    <div id="botoesLogin">
+                        <button id="cadastrarCliente" class="botao roxo">Cadastrar</button>
+                        <button id="voltar" class="botao branco">Voltar</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div id="aviso"></div>
