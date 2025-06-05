@@ -415,7 +415,7 @@ server.delete('/transacao/:id', async (req, res) => {
   }
 });
 
-// Rota de validação de login
+// Rota de validação de login administrador
 server.post('/validar-login', async (req, res) => {
   const { email, senha } = req.body;
 
@@ -446,6 +446,7 @@ server.post('/validar-login', async (req, res) => {
   }
 });
 
+// Rota para criar uma nova conta de cliente
 server.post('/criar-conta-cliente', async (req, res) => {
   const { nome, email, senha } = req.body;
 
@@ -475,6 +476,59 @@ server.post('/criar-conta-cliente', async (req, res) => {
     return res.status(500).json({ sucesso: false, mensagem: "Erro interno no servidor." });
   }
 });
+
+// Rota de validação de login de cliente
+server.post('/validar-login-cliente', async (req, res) => {
+  const { email, senha } = req.body;
+
+  try {
+      const [cliente] = await pool.query('SELECT * FROM cliente WHERE email = ?', [email]);
+
+      if (!cliente || !cliente.length) {
+          return res.status(400).json({ sucesso: false, mensagem: 'cliente não encontrado.' });
+      }
+      const [transacao] = await pool.query('SELECT * FROM transacao WHERE id_cliente = ?', [transacao[0].id_cliente]);
+
+      // Comparar a senha fornecida com a senha armazenada no banco de dados
+      if (senha === usuario[0].senha) {
+          res.json({
+              sucesso: true,
+              id: usuario[0].id,
+              nome: usuario[0].nome,
+              transacao: transacao[0].id_cliente
+          });
+      } else {
+          res.status(400).json({ sucesso: false, mensagem: 'Senha incorreta.' });
+      }
+
+  } catch (erro) {
+      console.error("Erro ao validar login:", erro);
+      res.status(500).send("Erro no servidor.");
+  }
+});
+
+// Retorna todos os produtos
+server.get('/lista-produtos', async (req, res) => {
+  try {
+    const [produtos] = await pool.query(`
+      SELECT 
+        produto.id, 
+        produto.nome, 
+        produto.descricao, 
+        imagem.link AS imagem,
+        empresa.nome AS empresa
+      FROM produto
+      LEFT JOIN imagem ON produto.id_imagem = imagem.id
+      INNER JOIN empresa ON produto.id_empresa = empresa.id
+    `);
+
+    res.json(produtos);
+  } catch (error) {
+    console.error("Erro ao buscar produtos:", error);
+    res.status(500).send("Erro ao buscar produtos.");
+  }
+});
+
 
 const PORTA = 3000;
 server.listen(PORTA, () => { 
