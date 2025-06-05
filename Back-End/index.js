@@ -446,6 +446,36 @@ server.post('/validar-login', async (req, res) => {
   }
 });
 
+server.post('/criar-conta-cliente', async (req, res) => {
+  const { nome, email, senha } = req.body;
+
+  if (!nome || !email || !senha) {
+    return res.status(400).json({ sucesso: false, mensagem: "Todos os campos são obrigatórios." });
+  }
+
+  try {
+    // Verifica se o e-mail já está cadastrado
+//    const [existente] = await pool.query('SELECT id FROM cliente WHERE email = ?', [email]);
+//    if (existente.length > 0) {
+//      return res.status(409).json({ sucesso: false, mensagem: "E-mail já cadastrado." });
+//    }
+    const [result] = await pool.query(
+      'INSERT INTO cliente (nome, email, senha) VALUES (?, ?, ?)',
+      [nome, email, senha]
+    );
+
+    res.status(201).json({
+      sucesso: true,
+      mensagem: "Cliente cadastrado com sucesso!",
+      cliente: { id: result.insertId, nome, email }
+    });
+
+  } catch (err) {
+    console.error("Erro ao cadastrar cliente:", err);
+    return res.status(500).json({ sucesso: false, mensagem: "Erro interno no servidor." });
+  }
+});
+
 const PORTA = 3000;
 server.listen(PORTA, () => { 
   console.log(`Servidor rodando na porta ${PORTA}`);
