@@ -78,13 +78,16 @@ async function listaProdutos(id_empresa) {
 
             const btnEditar = document.getElementById(`editarProduto${produto.id}`);
             const btnExcluir = document.getElementById(`excluirProduto${produto.id}`);
-
+            const btnComprar = document.getElementById(`comprarProduto${produto.id}`);
             if (btnEditar) {
                 btnEditar.addEventListener("click", () => editarProduto(produto.id));
             }
 
             if (btnExcluir) {
                 btnExcluir.addEventListener("click", () => excluirProduto(produto.id));
+            }
+            if (btnComprar) {
+                btnComprar.addEventListener("click", () => comprarProduto(produto.id));
             }
         });
 
@@ -211,6 +214,30 @@ async function editarProduto(id) {
     }
 }
 
+async function comprarProduto(idProduto) {
+    const email = getCookie("email");
+    if (!email) {
+        aviso("Usuário não logado. Faça login novamente.", "alerta");
+        return;
+    }
+    try {
+        const resposta = await fetch("http://localhost:3000/comprar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ idProduto, email })
+        });
+        const resultado = await resposta.json();
+        if (resultado.sucesso) {
+            aviso("Compra realizada! Confirmação enviada para seu e-mail.", "sucesso");
+        } else {
+            aviso("Erro ao realizar compra.", "erro");
+        }
+    } catch (erro) {
+        aviso("Erro de conexão ao comprar.", "erro");
+    }
+}
 async function salvarEdicao() {
     const nome = document.getElementById("NomeProdutoNovo").value.trim();
     const descricao = document.getElementById("informacaoProduto").value.trim();
