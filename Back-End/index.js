@@ -39,8 +39,8 @@ server.get('/usuario', async (req, res) => {
     res.json(rows);
 
   } catch (err) {
-    console.error("Erro ao buscar produto:", err);
-    res.status(500).send("Erro ao buscar produto");
+    console.error("Erro ao buscar usuario:", err);
+    res.status(500).send("Erro ao buscar usuario");
   }
 });
 
@@ -327,6 +327,91 @@ server.delete('/produto/:id', async (req, res) => {
   } catch (err) {
     console.error("Erro ao excluir produto:", err);
     res.status(500).send("Erro ao excluir produto.");
+  }
+});
+
+// Referente a tabela de Cliente
+
+// Acessar cliente
+server.get('/cliente', async (req, res) => {
+  const idUsuario = req.query.id_usuario;
+  try {
+    if (!idUsuario) {
+      return res.status(400).send("Parâmetro 'idCliente' é obrigatório.");
+    }
+    const [rows] = await pool.query(`
+      SELECT * from cliente   
+      WHERE id = ?
+    `, [idUsuario]);
+
+    res.json(rows);
+
+  } catch (err) {
+    console.error("Erro ao buscar cliente:", err);
+    res.status(500).send("Erro ao buscar cliente");
+  }
+});
+// Referente a tabela de transação
+
+// Acessar a tabela de transação
+server.get('/transacao', async (req, res) => {
+  const idUsuario = req.query.id_usuario;
+  try {
+    if (!idUsuario) {
+      return res.status(400).send("Parâmetro 'idtransacao' é obrigatório.");
+    }
+    const [rows] = await pool.query(`
+      SELECT * from transacao   
+      WHERE id_usuario = ?   
+    `, [idUsuario]);
+
+    res.json(rows);
+
+  } catch (err) {
+    console.error("Erro ao buscar transação:", err);
+    res.status(500).send("Erro ao buscar transação");
+  }
+});
+// Criar uma nova transacao
+server.post('/transacao', async (req, res) => {
+  const { id, id_cliente, id_produto } = req.body;
+
+  if (id, id_cliente, id_produto) {
+    return res.status(400).send("Todos os campos são obrigatórios.");
+  }
+
+  try {
+    const [result] = await pool.query(
+      'INSERT INTO transacao (id_cliente, id_produto) VALUES (?, ?)',
+      [id_cliente, id_produto]
+    );
+
+    res.status(201).json({
+      mensagem: "transacao cadastrado com sucesso!",
+      usuario: { id: result.insertId,id_cliente, id_produto }
+    });
+
+  } catch (err) {
+    console.error("Erro ao cadastrar transacao:", err);
+    res.status(500).send("Erro ao cadastrar transacao");
+  }
+});
+
+// Excluir uma transacao
+server.delete('/transacao/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await pool.query('DELETE FROM transacao WHERE id = ?', [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send("transacao não encontrada.");
+    }
+
+    res.send("transacao excluída com sucesso.");
+  } catch (err) {
+    console.error("Erro ao excluir transacao:", err);
+    res.status(500).send("Erro ao excluir transacao");
   }
 });
 

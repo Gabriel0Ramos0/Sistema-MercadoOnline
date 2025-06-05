@@ -75,3 +75,28 @@ INSERT INTO `usuario` VALUES
 (1,'Gabriel Ramos','gabriel@gmail.com','adm@123','CEO',21,'./assets/img/perfil-01.jpeg',1),
 (2,'Lucas Lima','Lucas@gmail.com','TI@123','Diretor TI',22,'./assets/img/perfil-02.jpeg',2),
 (3,'Luiz Fernando','Luiz@gmail.com','Infra@123','Desenvolvedor Senior',26,'./assets/img/perfil-03.jpeg',1);
+
+-- implemtental da 3 avaliação
+
+#Criar Tabela de cliente:
+
+CREATE TABLE `cliente` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(250) NOT NULL,
+  `email` varchar(250) NOT NULL,
+  `senha` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+#criar Tabela de transicao:
+
+CREATE TABLE `transicao` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_cliente` int NOT NULL,
+  `id_produto` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_cliente_idx` (`id_cliente`),
+  KEY `id_produto_idx` (`id_produto`),
+  CONSTRAINT `id_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id`),
+  CONSTRAINT `id_produto` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
