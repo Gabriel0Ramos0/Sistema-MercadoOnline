@@ -455,11 +455,6 @@ server.post('/criar-conta-cliente', async (req, res) => {
   }
 
   try {
-    // Verifica se o e-mail já está cadastrado
-//    const [existente] = await pool.query('SELECT id FROM cliente WHERE email = ?', [email]);
-//    if (existente.length > 0) {
-//      return res.status(409).json({ sucesso: false, mensagem: "E-mail já cadastrado." });
-//    }
     const [result] = await pool.query(
       'INSERT INTO cliente (nome, email, senha) VALUES (?, ?, ?)',
       [nome, email, senha]
@@ -477,35 +472,56 @@ server.post('/criar-conta-cliente', async (req, res) => {
   }
 });
 
+// Rota de validação de e-mail de cliente
+server.post('/validar-email', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ sucesso: false, mensagem: "E-mail não fornecido." });
+  }
+
+  try {
+    const [existente] = await pool.query('SELECT id FROM cliente WHERE email = ?', [email]);
+
+    if (existente.length > 0) {
+      return res.status(409).json({ sucesso: false, mensagem: "E-mail já cadastrado." });
+    }
+
+    res.json({ sucesso: true, mensagem: "E-mail disponível." });
+  } catch (erro) {
+    console.error("Erro ao verificar e-mail:", erro);
+    res.status(500).send("Erro no servidor.");
+  }
+});
+
 // Rota de validação de login de cliente
 server.post('/validar-login-cliente', async (req, res) => {
   const { email, senha } = req.body;
 
   try {
-      const [cliente] = await pool.query('SELECT * FROM cliente WHERE email = ?', [email]);
+    const [cliente] = await pool.query('SELECT * FROM cliente WHERE email = ?', [email]);
 
-      if (!cliente || !cliente.length) {
-          return res.status(400).json({ sucesso: false, mensagem: 'cliente não encontrado.' });
-      }
-      const [transacao] = await pool.query('SELECT * FROM transacao WHERE id_cliente = ?', [cliente[0].id]);
+    if (!cliente || cliente.length === 0) {
+      return res.status(400).json({ sucesso: false, mensagem: 'Cliente não encontrado.' });
+    }
 
-      // Comparar a senha fornecida com a senha armazenada no banco de dados
-      if (senha === usuario[0].senha) {
-          res.json({
-              sucesso: true,
-              id: usuario[0].id,
-              nome: usuario[0].nome,
-              transacao: transacao[0].id_cliente
-          });
-      } else {
-          res.status(400).json({ sucesso: false, mensagem: 'Senha incorreta.' });
-      }
+    // Comparar a senha fornecida com a armazenada no banco
+    if (senha === cliente[0].senha) {
+      res.json({
+        sucesso: true,
+        id: cliente[0].id,
+        nome: cliente[0].nome
+      });
+    } else {
+      res.status(400).json({ sucesso: false, mensagem: 'Senha incorreta.' });
+    }
 
   } catch (erro) {
-      console.error("Erro ao validar login:", erro);
-      res.status(500).send("Erro no servidor.");
+    console.error("Erro ao validar login:", erro);
+    res.status(500).send("Erro no servidor.");
   }
 });
+
 
 // Retorna todos os produtos
 server.get('/lista-produtos', async (req, res) => {
