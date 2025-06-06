@@ -1,10 +1,11 @@
-import { realizarLogin, novaConta, voltarCadastro, solicitarCodigoValidacao, verificarConta } from "./login.js";
+import { realizarLogin, realizarLoginCliente, novaConta, voltarCadastro, solicitarCodigoValidacao, verificarConta } from "./login.js";
 import { carregarDados, sair, adicionarProduto, adicionarProdutoNovo, novaFotoProduto, 
          salvarEdicao, confirmarExclusao, cancelar } from "./inicio.js";
 import { inicializarPopupUsuario } from "./perfil.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const botaoLogin = document.getElementById("entrar");
+    const botaoLoginCliente = document.getElementById("entrarCliente");
     const botaocriarConta = document.getElementById("criarConta");
     const cadastrarCliente = document.getElementById("cadastrarCliente");
     const botaoValidarEmail = document.getElementById("ValidarEmail");
@@ -20,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (botaoLogin) {
         botaoLogin.addEventListener("click", realizarLogin);
+        botaoLoginCliente.addEventListener("click", realizarLoginCliente);
         botaocriarConta.addEventListener("click", novaConta);
         voltar.addEventListener("click", voltarCadastro);
         cadastrarCliente.addEventListener("click", verificarConta);

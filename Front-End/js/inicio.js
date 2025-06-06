@@ -18,8 +18,11 @@ function carregarDados() {
     const nomeEmpresa = getCookie("empresa");
     const idEmpresa = getCookie("idEmpresa");
     const nomeUsuario = getCookie("nome");
+    const nomeCliente = getCookie("nomeCliente");
 
-    if (!nomeUsuario) {
+    const nome = nomeUsuario || nomeCliente;
+
+    if (!nome) {
         aviso("Não há um usuário logado no momento! Redirecionando você para a tela de Login!", "alerta");
         setTimeout(() => {
             window.location.href = "login.html";
@@ -27,13 +30,16 @@ function carregarDados() {
         return;
     }
 
-    if (empresaEl) empresaEl.textContent = nomeEmpresa || "{nome-da-sua-empresa}";
-    if (usuarioEl) usuarioEl.textContent = `Olá, ${nomeUsuario || "{nome-de-usuário}"}`;
+    if (empresaEl) empresaEl.textContent = nomeEmpresa || "";
+    if (usuarioEl) usuarioEl.textContent = `Olá, ${nome}`;
 
-    listaProdutos(idEmpresa);
+    if (idEmpresa) {
+        listaProdutos(idEmpresa);
+    }
 }
 
 function sair() {
+    document.cookie = "nomeCliente=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "idEmpresa=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "empresa=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";

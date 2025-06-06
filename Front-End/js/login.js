@@ -42,6 +42,45 @@ async function realizarLogin() {
     }
 }
 
+async function realizarLoginCliente() {
+    const email = document.getElementById("emailClienteAcesso").value.trim();
+    const senha = document.getElementById("senhaClienteAcesso").value;
+    
+    if (!email || !senha) {
+        aviso("Preencha todos os campos!", "alerta");
+        return;
+    }
+
+    try {
+        const resposta = await fetch("http://localhost:3000/validar-login-cliente", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, senha })
+        });
+
+        const resultado = await resposta.json();
+
+        if (resultado && resultado.sucesso) {
+            const { id, nome } = resultado;
+            aviso("Acesso Autorizado!", "sucesso");
+
+            document.cookie = `idCliente=${id}; path=/; max-age=3600`;
+            document.cookie = `nomeCliente=${encodeURIComponent(nome)}; path=/; max-age=3600`;
+
+            setTimeout(() => {
+                window.location.href = "inicio.html";
+            }, 5000);
+        } else {
+            aviso("E-mail ou senha incorretos.", "erro");
+        }
+    } catch (erro) {
+        console.error("Erro ao tentar logar cliente:", erro);
+        aviso("Erro de conexão com o servidor.", "erro");
+    }
+}
+
 function novaConta() {
     document.getElementById("fundoModal").style.display = "flex";
     document.getElementById("novaConta").style.display = "block";
@@ -152,4 +191,4 @@ window.addEventListener("keydown", (event) => {
     }
 });
 
-export { realizarLogin, novaConta, voltarCadastro, solicitarCodigoValidacao, verificarConta, aviso }
+export { realizarLogin, realizarLoginCliente, novaConta, voltarCadastro, solicitarCodigoValidacao, verificarConta, aviso }

@@ -67,20 +67,12 @@ export function inicializarPopupUsuario() {
   // Função para carregar dados do perfil do banco de dados
   async function loadPopupData() {
     const id = getCookie('id');
-    if (!id) {
-      aviso("Usuário não identificado.", "erro");
-      return;
-    }
     try {
       const response = await fetch(`http://localhost:3000/usuario?id_usuario=${id}`);
       if (!response.ok) {
         throw new Error("Erro ao buscar dados do usuário.");
       }
       const [user] = await response.json();
-      if (!user) {
-        aviso("Usuário não encontrado.", "erro");
-        return;
-      }
       document.getElementById('popupId').value = user.id || '';
       document.getElementById('popupName').value = user.nome || '';
       document.getElementById('popupEmpresa').value = user.empresa ||
@@ -104,7 +96,7 @@ export function inicializarPopupUsuario() {
       document.getElementById('popupAvatar').src = user.imagem || "";
       document.getElementById('iconeUsuario').src = user.imagem || "";
     } catch (err) {
-      aviso("Erro ao carregar dados do perfil.", "erro");
+      
     }
   } 
    loadPopupData(); // Carrega os dados ao abrir o popup
@@ -124,10 +116,6 @@ async function atualizarPerfil() {
   try {
     // Pega o ID do usuário (campo oculto, obrigatório)
     const id = document.getElementById('popupId')?.value.trim();
-    if (!id) {
-      aviso("ID do usuário não encontrado. Recarregue a página e tente novamente", "erro");
-      return;
-    }
 
     // Pega valores dos campos editáveis
     const idade = document.getElementById('popupIdade')?.value.trim();
