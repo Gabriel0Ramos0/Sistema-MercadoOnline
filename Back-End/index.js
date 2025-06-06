@@ -446,12 +446,21 @@ server.post('/validar-login', async (req, res) => {
   }
 });
 
+// Rota para validar o e-mail do cliente
+server.post('/validar-email', async (req, res) => {
+  // Criar algoritmo para gerar um código de 6 digitos e enviar por email
+});
+
 // Rota para criar uma nova conta de cliente
 server.post('/criar-conta-cliente', async (req, res) => {
-  const { nome, email, senha } = req.body;
+  const { nome, email, senha, codigo } = req.body;
 
-  if (!nome || !email || !senha) {
+  if (!nome || !email || !senha || !codigo) {
     return res.status(400).json({ sucesso: false, mensagem: "Todos os campos são obrigatórios." });
+  }
+
+  if (codigo !== "123456") { // Exemplo de código fixo para validação
+    return res.status(400).json({ sucesso: false, mensagem: "Código de verificação inválido." });
   }
 
   try {
