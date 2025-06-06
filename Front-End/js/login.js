@@ -68,6 +68,7 @@ async function realizarLoginCliente() {
 
             document.cookie = `idCliente=${id}; path=/; max-age=3600`;
             document.cookie = `nomeCliente=${encodeURIComponent(nome)}; path=/; max-age=3600`;
+            document.cookie = `email=${encodeURIComponent(email)}; path=/; max-age=3600`;
 
             setTimeout(() => {
                 window.location.href = "inicio.html";

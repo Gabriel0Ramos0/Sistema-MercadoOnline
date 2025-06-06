@@ -35,11 +35,14 @@ function carregarDados() {
 
     if (idEmpresa) {
         listaProdutos(idEmpresa);
+    } else if (!idEmpresa && nomeCliente) {
+        listaProdutoClientes();
     }
 }
 
 function sair() {
     document.cookie = "nomeCliente=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "idCliente=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "idEmpresa=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "empresa=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -92,6 +95,49 @@ async function listaProdutos(id_empresa) {
             if (btnExcluir) {
                 btnExcluir.addEventListener("click", () => excluirProduto(produto.id));
             }
+            if (btnComprar) {
+                btnComprar.addEventListener("click", () => comprarProduto(produto.id));
+            }
+        });
+
+    } catch (erro) {
+        console.error("Erro ao tentar extrair produtos:", erro);
+        aviso("Erro de conexão com o servidor!", "erro");
+    }
+}
+
+async function listaProdutoClientes() {
+    try {
+
+        const resposta = await fetch(`http://localhost:3000/lista-produtos`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        const produtos = await resposta.json();
+        const lista = document.getElementById("listaProdutos");
+        lista.innerHTML = "";
+
+        produtos.forEach((produto, index) => {
+            const divProduto = document.createElement("div");
+            divProduto.classList.add("produto");
+
+            divProduto.innerHTML = `
+                <img src="${produto.imagem}" alt="Imagem do Produto">
+                <div class="descricao">
+                    <p id="nomeProduto${index + 1}" class="preto nomeProduto"><b>${produto.nome}</b></p>
+                    <p id="descricaoProduto${index + 1}" class="preto descricaoProduto">${produto.descricao}</p>
+                    <div class="botoes">
+                        <button class="botao verde" id="comprarProduto${produto.id}">Comprar</button>
+                    </div>
+                </div>
+            `;
+
+            lista.appendChild(divProduto);
+
+            const btnComprar = document.getElementById(`comprarProduto${produto.id}`);
+
             if (btnComprar) {
                 btnComprar.addEventListener("click", () => comprarProduto(produto.id));
             }
