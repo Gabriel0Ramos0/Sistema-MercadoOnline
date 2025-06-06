@@ -28,9 +28,17 @@
                 <div id="formCadastroCliente">
                     <p class="fcc">Nome: <input id="nomeCliente" type="text" placeholder="Nome" required></p>
                     <p class="fcc">E-mail: <input id="emailCliente" type="email" placeholder="E-mail" required></p>
-                    <p class="fcc">Senha: <input id="senhaCliente" type="password" placeholder="Senha" required></p>
-                    <p class="fcc">Confirmar Senha: <input id="confirmarSenha" type="password"
-                            placeholder="Confirmar Senha" required></p>
+                    <p class="fcc" style="margin-bottom: 0px;">Verificar E-mail:</p>
+                    <div id="campoValiEmail" class="-flex">
+                        <input id="codigoVerificacao" type="number" placeholder="Código" required>
+                        <button id="ValidarEmail" class="botao roxo">Enviar Código</button>
+                    </div>
+                    <div id="senhas" class="-flex">
+                        <p class="fcc">Senha: <input id="senhaCliente" type="password" placeholder="Senha" required></p>
+                        <p class="fcc">Confirmar Senha:
+                            <input id="confirmarSenha" type="password" placeholder="Confirmar Senha" required>
+                        </p>
+                    </div>
                     <div id="botoesLogin">
                         <button id="cadastrarCliente" class="botao roxo">Cadastrar</button>
                         <button id="voltar" class="botao branco">Voltar</button>

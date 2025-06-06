@@ -1,4 +1,4 @@
-import { realizarLogin, novaConta, voltarCadastro, verificarConta } from "./login.js";
+import { realizarLogin, novaConta, voltarCadastro, solicitarCodigoValidacao, verificarConta } from "./login.js";
 import { carregarDados, sair, adicionarProduto, adicionarProdutoNovo, novaFotoProduto, 
          salvarEdicao, confirmarExclusao, cancelar } from "./inicio.js";
 import { inicializarPopupUsuario } from "./perfil.js";
@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const botaoLogin = document.getElementById("entrar");
     const botaocriarConta = document.getElementById("criarConta");
     const cadastrarCliente = document.getElementById("cadastrarCliente");
+    const botaoValidarEmail = document.getElementById("ValidarEmail");
     const telaInicio = document.getElementById("cabecalho");
     const adicionar = document.getElementById("adicionar");
     const produtoNovo = document.getElementById("adicionarProduto");
@@ -22,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
         botaocriarConta.addEventListener("click", novaConta);
         voltar.addEventListener("click", voltarCadastro);
         cadastrarCliente.addEventListener("click", verificarConta);
+        botaoValidarEmail.addEventListener("click", solicitarCodigoValidacao);
     }
 
     if (telaInicio) {

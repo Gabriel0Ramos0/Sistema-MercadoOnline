@@ -19,7 +19,7 @@ async function realizarLogin() {
 
         const resultado = await resposta.json();
 
-        if (resultado && resultado.sucesso) {            
+        if (resultado && resultado.sucesso) {
             const { id, nome, empresa, nomeEmpresa } = resultado;
             aviso("Acesso Autorizado!", "sucesso");
 
@@ -54,22 +54,43 @@ function voltarCadastro() {
     document.getElementById("acessoAdministrativo").style.display = "block";
 }
 
+async function solicitarCodigoValidacao() {
+    const email = document.getElementById("emailCliente").value.trim();
+    if (!email) return aviso("Informe um e-mail válido!", "alerta");
+
+    try {
+        const resposta = await fetch("http://localhost:3000/validar-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+
+        const resultado = await resposta.json();
+        if (resultado && resultado.sucesso) {
+            aviso("Código de verificação enviado!", "sucesso");
+            document.getElementById("campoCodigo").style.display = "block";
+        } else {
+            aviso("Erro ao enviar código. Tente novamente.", "erro");
+        }
+    } catch (erro) {
+        console.error("Erro ao validar e-mail:", erro);
+        aviso("Erro de conexão com o servidor.", "erro");
+    }
+}
+
 async function verificarConta() {
     const nome = document.getElementById("nomeCliente").value.trim();
     const email = document.getElementById("emailCliente").value.trim();
     const senha = document.getElementById("senhaCliente").value;
     const confirmarSenha = document.getElementById("confirmarSenha").value;
+    const codigo = document.getElementById("codigoVerificacao").value.trim();
 
-    if (!nome || !email || !senha) {
-        aviso("Preencha todos os campos!", "alerta");
-        return;
-    } else if (senha.length < 6) {
-        aviso("A senha deve ter pelo menos 6 caracteres!", "alerta");
-        return;
-    } else if (senha !== confirmarSenha) {
-        aviso("As senhas não coincidem!", "alerta");
-        return;
+    if (!nome || !email || !senha || !codigo) {
+        return aviso("Preencha todos os campos!", "alerta");
     }
+
+    if (senha.length < 6) return aviso("Senha muito curta.", "alerta");
+    if (senha !== confirmarSenha) return aviso("Senhas não coincidem.", "alerta");
 
     try {
         const resposta = await fetch("http://localhost:3000/criar-conta-cliente", {
@@ -77,12 +98,12 @@ async function verificarConta() {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ nome, email, senha })
+            body: JSON.stringify({ nome, email, senha, codigo })
         });
         const resultado = await resposta.json();
         if (resultado && resultado.sucesso) {
             aviso("Conta criada com sucesso!", "sucesso");
-            // aguardar a confirmação pelo email
+            voltarCadastro();
         } else {
             aviso("Erro ao criar conta. Tente novamente.", "erro");
         }
@@ -131,4 +152,4 @@ window.addEventListener("keydown", (event) => {
     }
 });
 
-export { realizarLogin, novaConta, voltarCadastro, verificarConta, aviso }
+export { realizarLogin, novaConta, voltarCadastro, solicitarCodigoValidacao, verificarConta, aviso }

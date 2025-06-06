@@ -84,6 +84,18 @@
     font-size: 15px;
 }
 
+#campoValiEmail {
+    justify-content: space-between;
+}
+
+#campoValiEmail input {
+    width: 50%;
+}
+
+#senhas input {
+    width: 90%;
+}
+
 #acessoAdministrativo {
     position: absolute;
     top: 0;
@@ -117,6 +129,6 @@
     opacity: 1;
 }
 
-#formAcessoAdmin {
+#formAcessoAdmin, #senhas {
     gap: 10px;
 }
