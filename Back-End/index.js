@@ -472,28 +472,6 @@ server.post('/criar-conta-cliente', async (req, res) => {
   }
 });
 
-// Rota de validação de e-mail de cliente
-server.post('/validar-email', async (req, res) => {
-  const { email } = req.body;
-
-  if (!email) {
-    return res.status(400).json({ sucesso: false, mensagem: "E-mail não fornecido." });
-  }
-
-  try {
-    const [existente] = await pool.query('SELECT id FROM cliente WHERE email = ?', [email]);
-
-    if (existente.length > 0) {
-      return res.status(409).json({ sucesso: false, mensagem: "E-mail já cadastrado." });
-    }
-
-    res.json({ sucesso: true, mensagem: "E-mail disponível." });
-  } catch (erro) {
-    console.error("Erro ao verificar e-mail:", erro);
-    res.status(500).send("Erro no servidor.");
-  }
-});
-
 // Rota de validação de login de cliente
 server.post('/validar-login-cliente', async (req, res) => {
   const { email, senha } = req.body;
