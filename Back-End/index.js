@@ -10,7 +10,7 @@ const pool = mysql.createPool({
   user: 'root',
   database: 'versao-1',
   port: 3306,
-  password: 'Lucas123',
+  password: 'root',
 });
 
 const server = express();
@@ -353,29 +353,29 @@ server.get('/cliente', async (req, res) => {
     res.status(500).send("Erro ao buscar cliente");
   }
 });
-// Referente a tabela de transação
+// Referente a tabela de carrinho
 
-// Acessar a tabela de transação
-server.get('/transacao', async (req, res) => {
+// Acessar a tabela de carrinho
+server.get('/carrinho', async (req, res) => {
   const id_cliente = req.query.id_usuario;
   try {
     if (!id_cliente) {
-      return res.status(400).send("Parâmetro 'idtransacao' é obrigatório.");
+      return res.status(400).send("Parâmetro 'idcarrinho' é obrigatório.");
     }
     const [rows] = await pool.query(`
-      SELECT * from transacao   
+      SELECT * from carrinho   
       WHERE id_cliente = ?   
     `, [idUsuario]);
 
     res.json(rows);
 
   } catch (err) {
-    console.error("Erro ao buscar transação:", err);
-    res.status(500).send("Erro ao buscar transação");
+    console.error("Erro ao buscar carrinho:", err);
+    res.status(500).send("Erro ao buscar carrinho");
   }
 });
-// Criar uma nova transacao
-server.post('/transacao', async (req, res) => {
+// Adcionar produto ao carrinho
+server.post('/carrinho', async (req, res) => {
   const { id, id_cliente, id_produto } = req.body;
 
   if (id, id_cliente, id_produto) {
@@ -384,38 +384,57 @@ server.post('/transacao', async (req, res) => {
 
   try {
     const [result] = await pool.query(
-      'INSERT INTO transacao (id_cliente, id_produto) VALUES (?, ?)',
+      'INSERT INTO carrinho (id_cliente, id_produto) VALUES (?, ?)',
       [id_cliente, id_produto]
     );
 
     res.status(201).json({
-      mensagem: "transacao cadastrado com sucesso!",
+      mensagem: "carrinho cadastrado com sucesso!",
       usuario: { id: result.insertId,id_cliente, id_produto }
     });
 
   } catch (err) {
-    console.error("Erro ao cadastrar transacao:", err);
-    res.status(500).send("Erro ao cadastrar transacao");
+    console.error("Erro ao cadastrar carrinho:", err);
+    res.status(500).send("Erro ao cadastrar carrinho");
   }
 });
 
-// Excluir uma transacao
-server.delete('/transacao/:id', async (req, res) => {
+// Excluir um produto do carrinho
+server.delete('/carrinho/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [result] = await pool.query('DELETE FROM transacao WHERE id = ?', [id]);
+    const [result] = await pool.query('DELETE FROM carrinho WHERE id = ?', [id]);
 
     if (result.affectedRows === 0) {
-      return res.status(404).send("transacao não encontrada.");
+      return res.status(404).send("carrinho não encontrada.");
     }
 
-    res.send("transacao excluída com sucesso.");
+    res.send("carrinho excluída com sucesso.");
   } catch (err) {
-    console.error("Erro ao excluir transacao:", err);
-    res.status(500).send("Erro ao excluir transacao");
+    console.error("Erro ao excluir carrinho:", err);
+    res.status(500).send("Erro ao excluir carrinho");
   }
 });
+
+// Apagar carrinho por cliente que quer finalizar compra ou limpar carrinho
+server.delete('/Limpar-ou-compra-carrinho', async (req, res) => {
+  const { id_cliente } = req.params;
+
+  try {
+    const [result] = await pool.query('DELETE FROM carrinho WHERE id_cliente = ?', [id_cliente]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send("carrinho não encontrada.");
+    }
+
+    res.send("carrinho excluída com sucesso.");
+  } catch (err) {
+    console.error("Erro ao excluir carrinho:", err);
+    res.status(500).send("Erro ao excluir carrinho");
+  }
+});
+
 
 // Validar login de administrador
 server.post('/validar-login', async (req, res) => {
