@@ -591,30 +591,6 @@ server.get('/lista-produtos', async (req, res) => {
   }
 });
 
-// Criptografia as senhas dos usuários
-async function atualizarSenhasUsuarios() {
-  try {
-    const [usuarios] = await pool.query('SELECT id, senha FROM usuario');
-
-    for (const usuario of usuarios) {
-      // Ignora se já estiver criptografada (bcrypt sempre começa com "$2")
-      if (usuario.senha.startsWith('$2')) continue;
-
-      const senhaCriptografada = await bcrypt.hash(usuario.senha, 10);
-      await pool.query('UPDATE usuario SET senha = ? WHERE id = ?', [senhaCriptografada, usuario.id]);
-      console.log(`Senha do usuário com ID ${usuario.id} foi atualizada.`);
-    }
-
-    console.log('Todas as senhas foram criptografadas.');
-    process.exit(0);
-  } catch (erro) {
-    console.error('Erro ao atualizar senhas:', erro);
-    process.exit(1);
-  }
-}
-
-//atualizarSenhasUsuarios();
-
 const PORTA = 3000;
 server.listen(PORTA, () => { 
   console.log(`Servidor rodando na porta ${PORTA}`);

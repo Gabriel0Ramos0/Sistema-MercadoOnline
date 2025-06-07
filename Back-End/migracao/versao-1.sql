@@ -59,7 +59,7 @@ CREATE TABLE `usuario` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(254) NOT NULL,
   `email` varchar(254) NOT NULL,
-  `senha` varchar(45) NOT NULL,
+  `senha` varchar(254) NOT NULL,
   `descricao` varchar(300) DEFAULT NULL,
   `idade` int DEFAULT NULL,
   `imagem` varchar(300) DEFAULT NULL,
@@ -69,12 +69,14 @@ CREATE TABLE `usuario` (
   CONSTRAINT `id_empresa` FOREIGN KEY (`id_empresa`) REFERENCES `empresa` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Ajustando conforme a necessidade da 3 avaliação
+
 # Inserindo usuario na tabela:
 
 INSERT INTO `usuario` VALUES 
-(1,'Gabriel Ramos','gabriel@gmail.com','adm@123','CEO',21,'./assets/img/perfil-01.jpeg',1),
-(2,'Lucas Lima','Lucas@gmail.com','TI@123','Diretor TI',22,'./assets/img/perfil-02.jpeg',2),
-(3,'Luiz Fernando','Luiz@gmail.com','Infra@123','Desenvolvedor Senior',26,'./assets/img/perfil-03.jpeg',1);
+(1,'Gabriel Ramos','gabriel@gmail.com','$2b$10$v6vdE6r8O1qasZpi0W6hF.s6IrReeXdIcR9ov721p9PoqdMwdgFyu','CEO',21,'./assets/img/perfil-01.jpeg',1),
+(2,'Lucas Lima','Lucas@gmail.com','$2b$10$Dq1gRTIl/FUj4yY16glDeeWjosFszO0Ha46EKRBPopk/I6F98z0u6','Diretor TI',22,'./assets/img/perfil-02.jpeg',2),
+(3,'Luiz Fernando','Luiz@gmail.com','$2b$10$AtVHIiMeYZIVCF9O83jXmuqNV1xMtPXXBvAcqnoOKTCVUTUejzL3m','Desenvolvedor Senior',26,'./assets/img/perfil-03.jpeg',1);
 
 -- implemtental da 3 avaliação
 
@@ -84,13 +86,13 @@ CREATE TABLE `cliente` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(250) NOT NULL,
   `email` varchar(250) NOT NULL,
-  `senha` varchar(45) NOT NULL,
+  `senha` varchar(250) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
 #criar Tabela de transicao:
 
-CREATE TABLE `transicao` (
+CREATE TABLE `carrinho` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_cliente` int NOT NULL,
   `id_produto` int NOT NULL,
