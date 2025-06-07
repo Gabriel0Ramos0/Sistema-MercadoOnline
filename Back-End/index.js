@@ -10,7 +10,7 @@ const pool = mysql.createPool({
   user: 'root',
   database: 'versao-1',
   port: 3306,
-  password: 'root',
+  password: 'Lucas123',
 });
 
 const server = express();
@@ -50,28 +50,29 @@ server.put('/usuario/:id', async (req, res) => {
   const { id } = req.params;
   const { senha, idade, descricao } = req.body;
 
-  // Verifica se os campos obrigatórios estão presentes
   if (!senha || idade == null || !descricao) {
     return res.status(400).send("Campos senha, idade e descrição são obrigatórios.");
   }
 
   try {
-    // Atualiza apenas os campos permitidos
+    const senhaHash = await bcrypt.hash(senha, 10); 
+
     const [result] = await pool.query(
       'UPDATE usuario SET senha = ?, idade = ?, descricao = ? WHERE id = ?',
-      [senha, idade, descricao, id]
+      [senhaHash, idade, descricao, id]
     );
 
     if (result.affectedRows === 0) {
       return res.status(404).send("Usuário não encontrado.");
     }
 
-    res.send("Perfil atualizado com sucesso.");
+    return res.send("Perfil atualizado com sucesso."); 
   } catch (err) {
     console.error("Erro ao atualizar perfil:", err);
-    res.status(500).send("Erro ao atualizar perfil.");
-  }
+    return res.status(500).send("Erro ao atualizar perfil.");
+  }
 });
+
 // Atualizar a foto do usuario
 server.put('/usuario/:id/foto', async (req, res) => {
   const { id } = req.params;
