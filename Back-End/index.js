@@ -12,6 +12,8 @@ const pool = mysql.createPool({
   password: 'root',
 });
 
+let codigosEmail = {};
+
 const server = express();
 server.use(express.json());
 
@@ -454,21 +456,21 @@ server.post('/validar-email', async (req, res) => {
 
   // Gera um código aleatório de 6 dígitos
   const codigo = Math.floor(100000 + Math.random() * 900000).toString();
-  codigosEmail[email] = codigo;  // armazena em memória
+   codigosEmail[email] = codigo;// armazena em memória
 
   // Configurar transporte (aqui usando Gmail; adapte se for outro provedor)
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: 'luizfernandomendesalberton@gmail.com',
-      pass: 'ecalfma'
+      pass: 'Qautv'
     }
   });
 
   const mailOptions = {
-    from: 'izfernandomendesalberton@gmail.com',
+   from: 'luizfernandomendesalberton@gmail.com',
     to: email,
-    subject: 'Seu código de verificação',
+    subject: 'afhki',
     text: `Olá! Seu código de verificação é: ${codigo}`
   };
 
