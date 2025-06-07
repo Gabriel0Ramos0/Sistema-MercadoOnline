@@ -502,9 +502,11 @@ server.post('/criar-conta-cliente', async (req, res) => {
   codigosEmail = null;
 
   try {
+    const senhaCriptografada = await bcrypt.hash(senha, 10);
+
     const [result] = await pool.query(
       'INSERT INTO cliente (nome, email, senha) VALUES (?, ?, ?)',
-      [nome, email, senha]
+      [nome, email, senhaCriptografada]
     );
 
     return res.status(201).json({
@@ -518,7 +520,7 @@ server.post('/criar-conta-cliente', async (req, res) => {
   }
 });
 
-// Rota de validação de login de cliente
+// Validar login de cliente
 server.post('/validar-login-cliente', async (req, res) => {
   const { email, senha } = req.body;
 
@@ -529,8 +531,9 @@ server.post('/validar-login-cliente', async (req, res) => {
       return res.status(400).json({ sucesso: false, mensagem: 'Cliente não encontrado.' });
     }
 
-    // Comparar a senha fornecida com a armazenada no banco
-    if (senha === cliente[0].senha) {
+    const senhaCorreta = await bcrypt.compare(senha, cliente[0].senha);
+
+    if (senhaCorreta) {
       res.json({
         sucesso: true,
         id: cliente[0].id,
@@ -545,7 +548,6 @@ server.post('/validar-login-cliente', async (req, res) => {
     res.status(500).send("Erro no servidor.");
   }
 });
-
 
 // Retorna todos os produtos
 server.get('/lista-produtos', async (req, res) => {
