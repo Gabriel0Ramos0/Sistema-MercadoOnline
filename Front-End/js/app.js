@@ -3,6 +3,8 @@ import { carregarDados, sair, adicionarProduto, adicionarProdutoNovo, novaFotoPr
          salvarEdicao, confirmarExclusao, cancelar } from "./inicio.js";
 import { inicializarPopupUsuario } from "./perfil.js";
 
+window.solicitarCodigoValidacao = solicitarCodigoValidacao;
+
 document.addEventListener("DOMContentLoaded", () => {
     const botaoLogin = document.getElementById("entrar");
     const botaoLoginCliente = document.getElementById("entrarCliente");

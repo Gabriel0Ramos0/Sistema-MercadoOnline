@@ -2,7 +2,7 @@ const http = require('http');
 const express = require('express');
 const fs = require('fs');
 const mysql = require("mysql2/promise");
-
+const nodemailer = require('nodemailer');
 
 const pool = mysql.createPool({
   host: 'localhost',
@@ -446,40 +446,72 @@ server.post('/validar-login', async (req, res) => {
   }
 });
 
-// Rota para validar o e-mail do cliente
 server.post('/validar-email', async (req, res) => {
-  // Criar algoritmo para gerar um código de 6 digitos e enviar por email
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ sucesso: false, mensagem: "E-mail é obrigatório." });
+  }
+
+  // Gera um código aleatório de 6 dígitos
+  const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+  codigosEmail[email] = codigo;  // armazena em memória
+
+  // Configurar transporte (aqui usando Gmail; adapte se for outro provedor)
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'luizfernandomendesalberton@gmail.com',
+      pass: 'ecalfma'
+    }
+  });
+
+  const mailOptions = {
+    from: 'izfernandomendesalberton@gmail.com',
+    to: email,
+    subject: 'Seu código de verificação',
+    text: `Olá! Seu código de verificação é: ${codigo}`
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return res.json({ sucesso: true, mensagem: "Código enviado para o seu e-mail." });
+  } catch (err) {
+    console.error("Erro ao enviar e-mail:", err);
+    return res.status(500).json({ sucesso: false, mensagem: "Falha ao enviar e-mail." });
+  }
 });
 
-// Rota para criar uma nova conta de cliente
+
 server.post('/criar-conta-cliente', async (req, res) => {
   const { nome, email, senha, codigo } = req.body;
-
   if (!nome || !email || !senha || !codigo) {
     return res.status(400).json({ sucesso: false, mensagem: "Todos os campos são obrigatórios." });
   }
 
-  if (codigo !== "123456") { // Exemplo de código fixo para validação
-    return res.status(400).json({ sucesso: false, mensagem: "Código de verificação inválido." });
+  // Verifica o código enviado
+  if (!codigosEmail[email] || codigosEmail[email] !== codigo) {
+    return res.status(400).json({ sucesso: false, mensagem: "Código de verificação inválido ou expirado." });
   }
+  // opcional: delete codigosEmail[email];
 
   try {
     const [result] = await pool.query(
       'INSERT INTO cliente (nome, email, senha) VALUES (?, ?, ?)',
       [nome, email, senha]
     );
+    // opcional: delete codigosEmail[email]; // limpa o código usado
 
-    res.status(201).json({
+    return res.status(201).json({
       sucesso: true,
       mensagem: "Cliente cadastrado com sucesso!",
       cliente: { id: result.insertId, nome, email }
     });
-
   } catch (err) {
     console.error("Erro ao cadastrar cliente:", err);
     return res.status(500).json({ sucesso: false, mensagem: "Erro interno no servidor." });
   }
 });
+
 
 // Rota de validação de login de cliente
 server.post('/validar-login-cliente', async (req, res) => {

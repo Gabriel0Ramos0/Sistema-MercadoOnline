@@ -95,28 +95,31 @@ function voltarCadastro() {
 }
 
 async function solicitarCodigoValidacao() {
-    const email = document.getElementById("emailCliente").value.trim();
-    if (!email) return aviso("Informe um e-mail válido!", "alerta");
+  const email = document.getElementById("emailCliente").value.trim();
+  if (!email) {
+    return aviso("Informe um e-mail válido!", "alerta");
+  }
 
-    try {
-        const resposta = await fetch("http://localhost:3000/validar-email", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email })
-        });
-
-        const resultado = await resposta.json();
-        if (resultado && resultado.sucesso) {
-            aviso("Código de verificação enviado!", "sucesso");
-            document.getElementById("campoCodigo").style.display = "block";
-        } else {
-            aviso("Erro ao enviar código. Tente novamente.", "erro");
-        }
-    } catch (erro) {
-        console.error("Erro ao validar e-mail:", erro);
-        aviso("Erro de conexão com o servidor.", "erro");
+  try {
+    const resp = await fetch("http://localhost:3000/validar-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    const resultado = await resp.json();
+    if (resultado.sucesso) {
+      aviso("Código de verificação enviado!", "sucesso");
+      // Exibe o campo de digitação do código
+      document.getElementById("campoValiEmail").style.display = "flex";
+    } else {
+      aviso(resultado.mensagem, "erro");
     }
+  } catch (err) {
+    console.error(err);
+    aviso("Erro de conexão com o servidor.", "erro");
+  }
 }
+
 
 async function verificarConta() {
     const nome = document.getElementById("nomeCliente").value.trim();
