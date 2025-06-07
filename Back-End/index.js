@@ -418,37 +418,39 @@ server.delete('/transacao/:id', async (req, res) => {
   }
 });
 
-// Rota de validação de login administrador
+// Validar login de administrador
 server.post('/validar-login', async (req, res) => {
   const { email, senha } = req.body;
 
   try {
-      const [usuario] = await pool.query('SELECT * FROM usuario WHERE email = ?', [email]);
+    const [usuario] = await pool.query('SELECT * FROM usuario WHERE email = ?', [email]);
 
-      if (!usuario || !usuario.length) {
-          return res.status(400).json({ sucesso: false, mensagem: 'Usuário não encontrado.' });
-      }
-      const [empresa] = await pool.query('SELECT * FROM empresa WHERE id = ?', [usuario[0].id_empresa]);
+    if (!usuario || !usuario.length) {
+      return res.status(400).json({ sucesso: false, mensagem: 'Usuário não encontrado.' });
+    }
 
-      // Comparar a senha fornecida com a senha armazenada no banco de dados
-      if (senha === usuario[0].senha) {
-          res.json({
-              sucesso: true,
-              id: usuario[0].id,
-              nome: usuario[0].nome,
-              empresa: usuario[0].id_empresa,
-              nomeEmpresa: empresa[0].nome
-          });
-      } else {
-          res.status(400).json({ sucesso: false, mensagem: 'Senha incorreta.' });
-      }
+    const senhaValida = await bcrypt.compare(senha, usuario[0].senha);
+    if (!senhaValida) {
+      return res.status(400).json({ sucesso: false, mensagem: 'Senha incorreta.' });
+    }
+
+    const [empresa] = await pool.query('SELECT * FROM empresa WHERE id = ?', [usuario[0].id_empresa]);
+
+    res.json({
+      sucesso: true,
+      id: usuario[0].id,
+      nome: usuario[0].nome,
+      empresa: usuario[0].id_empresa,
+      nomeEmpresa: empresa[0].nome
+    });
 
   } catch (erro) {
-      console.error("Erro ao validar login:", erro);
-      res.status(500).send("Erro no servidor.");
+    console.error("Erro ao validar login:", erro);
+    res.status(500).send("Erro no servidor.");
   }
 });
 
+// Rota para validar e enviar código de verificação por e-mail
 server.post('/validar-email', async (req, res) => {
   const { email } = req.body;
   if (!email) {
@@ -484,7 +486,7 @@ server.post('/validar-email', async (req, res) => {
   }
 });
 
-
+// Rota para criar uma conta de cliente
 server.post('/criar-conta-cliente', async (req, res) => {
   const { nome, email, senha, codigo } = req.body;
   if (!nome || !email || !senha || !codigo) {
@@ -567,6 +569,29 @@ server.get('/lista-produtos', async (req, res) => {
   }
 });
 
+// Criptografia as senhas dos usuários
+async function atualizarSenhasUsuarios() {
+  try {
+    const [usuarios] = await pool.query('SELECT id, senha FROM usuario');
+
+    for (const usuario of usuarios) {
+      // Ignora se já estiver criptografada (bcrypt sempre começa com "$2")
+      if (usuario.senha.startsWith('$2')) continue;
+
+      const senhaCriptografada = await bcrypt.hash(usuario.senha, 10);
+      await pool.query('UPDATE usuario SET senha = ? WHERE id = ?', [senhaCriptografada, usuario.id]);
+      console.log(`Senha do usuário com ID ${usuario.id} foi atualizada.`);
+    }
+
+    console.log('Todas as senhas foram criptografadas.');
+    process.exit(0);
+  } catch (erro) {
+    console.error('Erro ao atualizar senhas:', erro);
+    process.exit(1);
+  }
+}
+
+//atualizarSenhasUsuarios();
 
 const PORTA = 3000;
 server.listen(PORTA, () => { 
