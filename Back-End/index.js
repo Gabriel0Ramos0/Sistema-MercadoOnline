@@ -13,8 +13,6 @@ const pool = mysql.createPool({
   password: 'root',
 });
 
-let codigosEmail = {};
-
 const server = express();
 server.use(express.json());
 
@@ -450,6 +448,8 @@ server.post('/validar-login', async (req, res) => {
   }
 });
 
+let codigosEmail;
+
 server.post('/validar-email', async (req, res) => {
   const { email } = req.body;
   if (!email) {
@@ -458,7 +458,7 @@ server.post('/validar-email', async (req, res) => {
 
   // Gera um código aleatório de 6 dígitos
   const codigo = Math.floor(100000 + Math.random() * 900000).toString();
-   codigosEmail[email] = codigo;// armazena em memória
+  codigosEmail = codigo;
 
   // Configurar transporte (aqui usando Gmail; adapte se for outro provedor)
   const transporter = nodemailer.createTransport({
@@ -466,6 +466,9 @@ server.post('/validar-email', async (req, res) => {
     auth: {
       user: 'luizfernandomendesalberton@gmail.com',
       pass: 'ntgh dvkg kbei vril'
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   });
 
@@ -493,17 +496,16 @@ server.post('/criar-conta-cliente', async (req, res) => {
   }
 
   // Verifica o código enviado
-  if (!codigosEmail[email] || codigosEmail[email] !== codigo) {
+  if (!codigosEmail || codigosEmail !== codigo) {
     return res.status(400).json({ sucesso: false, mensagem: "Código de verificação inválido ou expirado." });
   }
-  // opcional: delete codigosEmail[email];
+  codigosEmail = null;
 
   try {
     const [result] = await pool.query(
       'INSERT INTO cliente (nome, email, senha) VALUES (?, ?, ?)',
       [nome, email, senha]
     );
-    // opcional: delete codigosEmail[email]; // limpa o código usado
 
     return res.status(201).json({
       sucesso: true,
@@ -515,7 +517,6 @@ server.post('/criar-conta-cliente', async (req, res) => {
     return res.status(500).json({ sucesso: false, mensagem: "Erro interno no servidor." });
   }
 });
-
 
 // Rota de validação de login de cliente
 server.post('/validar-login-cliente', async (req, res) => {
