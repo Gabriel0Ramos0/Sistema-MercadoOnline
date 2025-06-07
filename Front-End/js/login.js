@@ -94,6 +94,8 @@ function voltarCadastro() {
     document.getElementById("acessoAdministrativo").style.display = "block";
 }
 
+document.getElementById("ValidarEmail").addEventListener("click", solicitarCodigoValidacao);
+
 async function solicitarCodigoValidacao() {
   const email = document.getElementById("emailCliente").value.trim();
   if (!email) return aviso("Informe um e-mail válido!", "alerta");

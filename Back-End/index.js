@@ -450,7 +450,6 @@ server.post('/validar-login', async (req, res) => {
   }
 });
 
-// Rota para validar e enviar código de verificação por e-mail
 server.post('/validar-email', async (req, res) => {
   const { email } = req.body;
   if (!email) {
@@ -466,14 +465,14 @@ server.post('/validar-email', async (req, res) => {
     service: 'gmail',
     auth: {
       user: 'luizfernandomendesalberton@gmail.com',
-      pass: 'Qautv'
+      pass: 'ntgh dvkg kbei vril'
     }
   });
 
   const mailOptions = {
    from: 'luizfernandomendesalberton@gmail.com',
     to: email,
-    subject: 'afhki',
+    subject: 'Mercado Online',
     text: `Olá! Seu código de verificação é: ${codigo}`
   };
 
