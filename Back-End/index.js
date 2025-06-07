@@ -3,6 +3,7 @@ const express = require('express');
 const fs = require('fs');
 const mysql = require("mysql2/promise");
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
 
 const pool = mysql.createPool({
   host: 'localhost',
