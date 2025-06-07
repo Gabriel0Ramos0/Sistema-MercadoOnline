@@ -96,9 +96,7 @@ function voltarCadastro() {
 
 async function solicitarCodigoValidacao() {
   const email = document.getElementById("emailCliente").value.trim();
-  if (!email) {
-    return aviso("Informe um e-mail válido!", "alerta");
-  }
+  if (!email) return aviso("Informe um e-mail válido!", "alerta");
 
   try {
     const resp = await fetch("http://localhost:3000/validar-email", {
@@ -109,8 +107,6 @@ async function solicitarCodigoValidacao() {
     const resultado = await resp.json();
     if (resultado.sucesso) {
       aviso("Código de verificação enviado!", "sucesso");
-      // Exibe o campo de digitação do código
-      document.getElementById("campoValiEmail").style.display = "flex";
     } else {
       aviso(resultado.mensagem, "erro");
     }
@@ -119,7 +115,6 @@ async function solicitarCodigoValidacao() {
     aviso("Erro de conexão com o servidor.", "erro");
   }
 }
-
 
 async function verificarConta() {
     const nome = document.getElementById("nomeCliente").value.trim();
