@@ -96,7 +96,10 @@ async function listaProdutos(id_empresa) {
                 btnExcluir.addEventListener("click", () => excluirProduto(produto.id));
             }
             if (btnComprar) {
-                btnComprar.addEventListener("click", () => comprarProduto(produto.id));
+               btnComprar.addEventListener("click", () => {
+               const emailUsuario = getCookie("email"); // Pegue o e-mail do cookie na hora do clique!
+               comprarProduto(produto.id, emailUsuario);
+              });
             }
         });
 
@@ -139,7 +142,10 @@ async function listaProdutoClientes() {
             const btnComprar = document.getElementById(`comprarProduto${produto.id}`);
 
             if (btnComprar) {
-                btnComprar.addEventListener("click", () => comprarProduto(produto.id));
+                btnComprar.addEventListener("click", () => {
+                 const emailUsuario = getCookie("email"); // Pegue o e-mail do cookie na hora do clique!
+                 comprarProduto(produto.id, emailUsuario);
+        });
             }
         });
 
@@ -266,7 +272,7 @@ async function editarProduto(id) {
     }
 }
 
-async function comprarProduto(idProduto) {
+/* async function comprarProduto(idProduto) {
     const email = getCookie("email");
     if (!email) {
         aviso("Usuário não logado. Faça login novamente.", "alerta");
@@ -289,7 +295,23 @@ async function comprarProduto(idProduto) {
     } catch (erro) {
         aviso("Erro de conexão ao comprar.", "erro");
     }
+}*/
+// Supondo que você já tem o e-mail do usuário salvo em uma variável
+async function comprarProduto(idProduto, emailUsuario) {
+    console.log("Enviando para o back-end:", idProduto, emailUsuario); // Adicione isso!
+    const resposta = await fetch("http://localhost:3000/comprar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idProduto, email: emailUsuario })
+    });
+    const resultado = await resposta.json();
+    if (resultado.sucesso) {
+        aviso("E-mail de confirmação enviado!", "sucesso");
+    } else {
+        aviso("Erro ao enviar e-mail de confirmação.", "erro");
+    }
 }
+
 async function salvarEdicao() {
     const nome = document.getElementById("NomeProdutoNovo").value.trim();
     const descricao = document.getElementById("informacaoProduto").value.trim();

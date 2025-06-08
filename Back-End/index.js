@@ -4,6 +4,18 @@ const fs = require('fs');
 const mysql = require("mysql2/promise");
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
+
+const transporterCompra = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'luizfernandomendesalberton@gmail.com',
+    pass: 'ntgh dvkg kbei vril'
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
 
 const pool = mysql.createPool({
   host: 'localhost',
@@ -567,6 +579,54 @@ server.post('/validar-login-cliente', async (req, res) => {
     console.error("Erro ao validar login:", erro);
     res.status(500).send("Erro no servidor.");
   }
+});
+
+// No topo do arquivo:
+let comprasPendentes = {}; // Em produção, use banco de dados
+
+// Rota para iniciar compra e enviar e-mail de confirmação
+server.post('/comprar', async (req, res) => {
+    const { idProduto, email } = req.body;
+    if (!idProduto || !email) {
+        return res.status(400).json({ sucesso: false, mensagem: "Dados inválidos." });
+    }
+
+    const token = uuidv4();
+    comprasPendentes[token] = { idProduto, email };
+
+    const linkConfirmacao = `http://localhost:3000/solicitar-compra/${token}`;
+
+    try {
+        await transporterCompra.sendMail({
+            from: 'luizfernandomendesalbertongmail.com',
+            to: email,
+            subject: 'Confirme sua compra',
+            html: `
+                <p>Clique no botão abaixo para confirmar sua compra:</p>
+                <a href="${linkConfirmacao}" style="padding:10px 20px;background:#7749f8;color:#fff;text-decoration:none;border-radius:5px;">Confirmar Compra</a>
+            `
+        });
+        res.json({ sucesso: true });
+    } catch (erro) {
+        console.error("Erro ao enviar e-mail de confirmação:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao enviar e-mail." });
+    }
+});
+
+// Rota para confirmar a compra
+server.get('/solicitar-compra/:token', async (req, res) => {
+    const { token } = req.params;
+    const compra = comprasPendentes[token];
+    if (!compra) {
+        return res.send("Token inválido ou expirado.");
+    }
+
+    // Aqui você pode finalizar a compra no banco de dados
+    // Exemplo: await registrarCompra(compra.email, compra.idProduto);
+
+    delete comprasPendentes[token];
+
+    res.send("Compra confirmada com sucesso! Obrigado.");
 });
 
 // Retorna todos os produtos
