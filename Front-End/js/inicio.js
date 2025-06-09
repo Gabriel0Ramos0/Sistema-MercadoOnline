@@ -285,30 +285,10 @@ async function editarProduto(id) {
     }
 }
 
-/* async function comprarProduto(idProduto) {
-    const email = getCookie("email");
-    if (!email) {
-        aviso("Usuário não logado. Faça login novamente.", "alerta");
-        return;
-    }
-    try {
-        const resposta = await fetch("http://localhost:3000/comprar", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ idProduto, email })
-        });
-        const resultado = await resposta.json();
-        if (resultado.sucesso) {
-            aviso("Compra realizada! Confirmação enviada para seu e-mail.", "sucesso");
-        } else {
-            aviso("Erro ao realizar compra.", "erro");
-        }
-    } catch (erro) {
-        aviso("Erro de conexão ao comprar.", "erro");
-    }
-}*/
+function adicionarProdutoCarrinho(idProduto) {
+    // Função para adicionar produto ao carrinho
+}
+
 // Supondo que você já tem o e-mail do usuário salvo em uma variável
 async function comprarProduto(idProduto, emailUsuario, quantidade) {
     const resposta = await fetch("http://localhost:3000/comprar", {

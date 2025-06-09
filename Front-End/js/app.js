@@ -1,7 +1,7 @@
 import { realizarLogin, realizarLoginCliente, novaConta, voltarCadastro, solicitarCodigoValidacao, verificarConta } from "./login.js";
 import { carregarDados, sair, adicionarProduto, adicionarProdutoNovo, novaFotoProduto, 
          salvarEdicao, confirmarExclusao, cancelar, buscarProduto } from "./inicio.js";
-import { inicializarPopupUsuario } from "./perfil.js";
+import { inicializarPopupUsuario, fecharCarrinho } from "./perfil.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const botaoLogin = document.getElementById("entrar");
@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const excluir = document.getElementById("confirmarExclusao");
     const sairExclusao = document.getElementById("cancelarExclusao");
     const buscar = document.getElementById("buscar");
+    const fecharTelaCarrinho = document.getElementById("fecharCarrinho");
 
     if (botaoLogin) {
         botaoLogin.addEventListener("click", realizarLogin);
@@ -41,5 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
         sairExclusao.addEventListener("click", cancelar);
         buscar.addEventListener("click", buscarProduto);
         inicializarPopupUsuario();
+        fecharTelaCarrinho.addEventListener("click", fecharCarrinho);
     }
 })

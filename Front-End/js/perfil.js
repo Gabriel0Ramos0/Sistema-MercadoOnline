@@ -16,6 +16,9 @@ export function inicializarPopupUsuario() {
     iconeUsuario.src = "./assets/icone/carrinho.png";
     iconeUsuario.style.marginLeft = "10px";
     iconeUsuario.style.marginRight = "15px";
+    iconeUsuario.addEventListener('click', function () {
+      exibirCarrinho();
+    });
     return;
   }
 
@@ -167,4 +170,14 @@ export function inicializarPopupUsuario() {
     e.preventDefault();
     atualizarPerfil();
   });
+}
+
+function exibirCarrinho() {
+  const carrinho = document.getElementById('carrinho');
+  carrinho.style.display = 'block';
+}
+
+export function fecharCarrinho() {
+  const carrinho = document.getElementById('carrinho');
+  carrinho.style.display = 'none';
 }

@@ -4,7 +4,8 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src http://localhost:3000 http://127.0.0.1:5500 ws:; img-src 'self' data:;">
+	<meta http-equiv="Content-Security-Policy"
+		content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src http://localhost:3000 http://127.0.0.1:5500 ws:; img-src 'self' data:;">
 	<title>Início</title>
 	<link rel="stylesheet" href="./css/styles.css">
 	<link rel="stylesheet" href="./css/inicio.css">
@@ -27,50 +28,59 @@
 			<div class="popup-header">
 				<h3>Meu Perfil</h3>
 				<span class="popup-close">&times;</span>
-			  </div>
-			<div class="popup-content">
-			  <div class="popup-body">
-				<div class="avatar-container">
-				  <img id="popupAvatar" src="./assets/icone/IconeMulher.jpg" alt="Foto" class="avatar">
-				  <input type="file" id="popupAvatarInput" accept="image/*" style="display: none;">
-				  <button id="salvarIcone" type="submit" class="botao roxo pequeno">Salvar</button>
-				  <button id="alterarPerfil" class="botao roxo pequeno">Alterar Foto e Salvar</button>
-				</div>
-				<form id="popupForm">
-					<div class="form-group">
-						<label>id</label>
-						<input type="text" id="popupId" value="" disabled>
-					</div>
-				  <div class="form-group">
-					<label>Nome:</label>
-					<input type="text" id="popupName" value=""  disabled>
-				  </div>
-				  <div class="form-group">
-					<label>senha:</label>
-					<input type="password" id="popupSenha" value="">
-				  </div>
-				  <div class="form-group">
-					<label>empresa:</label>
-					<input type="text" id="popupEmpresa" value="" disabled>
-				  </div>
-				  <div class="form-group">
-					<label>E-mail:</label>
-					<input type="email" id="popupEmail" value="" disabled>
-				  </div>
-				  <div class="form-group">
-					<label>Idade:</label>
-					<input type="number" id="popupIdade" value="">
-				  </div>
-				  <div class="form-group">
-					<label>Descrição:</label>
-					<textarea id="popupBio"></textarea>
-				  </div>
-				  <div class="form-buttons">
-				  </div>
-				</form>
-			  </div>
 			</div>
-		  </div>
+			<div class="popup-content">
+				<div class="popup-body">
+					<div class="avatar-container">
+						<img id="popupAvatar" src="./assets/icone/IconeMulher.jpg" alt="Foto" class="avatar">
+						<input type="file" id="popupAvatarInput" accept="image/*" style="display: none;">
+						<button id="salvarIcone" type="submit" class="botao roxo pequeno">Salvar</button>
+						<button id="alterarPerfil" class="botao roxo pequeno">Alterar Foto e Salvar</button>
+					</div>
+					<form id="popupForm">
+						<div class="form-group">
+							<label>id</label>
+							<input type="text" id="popupId" value="" disabled>
+						</div>
+						<div class="form-group">
+							<label>Nome:</label>
+							<input type="text" id="popupName" value="" disabled>
+						</div>
+						<div class="form-group">
+							<label>senha:</label>
+							<input type="password" id="popupSenha" value="">
+						</div>
+						<div class="form-group">
+							<label>empresa:</label>
+							<input type="text" id="popupEmpresa" value="" disabled>
+						</div>
+						<div class="form-group">
+							<label>E-mail:</label>
+							<input type="email" id="popupEmail" value="" disabled>
+						</div>
+						<div class="form-group">
+							<label>Idade:</label>
+							<input type="number" id="popupIdade" value="">
+						</div>
+						<div class="form-group">
+							<label>Descrição:</label>
+							<textarea id="popupBio"></textarea>
+						</div>
+						<div class="form-buttons">
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div id="carrinho" class="profile-popup">
+			<h3>Carrinho</h3>
+			<button id="fecharCarrinho" class="botao branco">Fechar</button>
+			<span id="quantidadeCarrinho">0</span>
+			<div id="listaCarrinho"></div>
+			<div id="totalCarrinho"></div>
+			<button id="limparCarrinho" class="botao roxo">Limpar Carrinho</button>
+			<button id="finalizarCompra" class="botao roxo">Finalizar Compra</button> <!-- Associar ele ao comprar produto -->
+		</div>
 		<div id="tituloTabela" class="-flex">
 			<p><em>Produtos</em></p>
 			<div id="pesquisas" class="-flex" style="gap: 10px; display: none;">
@@ -106,7 +116,8 @@
 				<h2>Confirmar exclusão</h2>
 				<p>Deseja realmente excluir o item selecionado?</p>
 				<div class="botoesProduto -flex" style="justify-content: end;">
-					<button id="cancelarExclusao" class="botao roxo" style="border: 1px solid #7749f8;">Cancelar</button>
+					<button id="cancelarExclusao" class="botao roxo"
+						style="border: 1px solid #7749f8;">Cancelar</button>
 					<button id="confirmarExclusao" class="botao branco">Sim</button>
 				</div>
 			</div>
