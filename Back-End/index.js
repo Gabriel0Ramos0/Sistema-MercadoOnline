@@ -586,8 +586,8 @@ let comprasPendentes = {}; // Em produção, use banco de dados
 
 // Rota para iniciar compra e enviar e-mail de confirmação
 server.post('/comprar', async (req, res) => {
-    const { idProduto, email } = req.body;
-    if (!idProduto || !email) {
+    const { idProduto, email, quantidade } = req.body;
+    if (!idProduto || !email || !quantidade || quantidade <= 0) {
         return res.status(400).json({ sucesso: false, mensagem: "Dados inválidos." });
     }
 

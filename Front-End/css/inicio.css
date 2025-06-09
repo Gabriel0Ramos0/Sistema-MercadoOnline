@@ -215,3 +215,34 @@
     line-height: 1.6;
     font-size: 17px;
 }
+
+.contador {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.contador button {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.contador input {
+    width: 40px;
+    text-align: center;
+    margin: 0 5px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.contador input::-webkit-inner-spin-button,
+.contador input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

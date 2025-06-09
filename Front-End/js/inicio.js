@@ -30,7 +30,7 @@ function carregarDados() {
         return;
     }
 
-    if (empresaEl) empresaEl.textContent = nomeEmpresa || "";
+    if (empresaEl) empresaEl.textContent = nomeEmpresa || "Mercado Online";
     if (usuarioEl) usuarioEl.textContent = `Olá, ${nome}`;
 
     if (idEmpresa) {
@@ -87,19 +87,12 @@ async function listaProdutos(id_empresa) {
 
             const btnEditar = document.getElementById(`editarProduto${produto.id}`);
             const btnExcluir = document.getElementById(`excluirProduto${produto.id}`);
-            const btnComprar = document.getElementById(`comprarProduto${produto.id}`);
             if (btnEditar) {
                 btnEditar.addEventListener("click", () => editarProduto(produto.id));
             }
 
             if (btnExcluir) {
                 btnExcluir.addEventListener("click", () => excluirProduto(produto.id));
-            }
-            if (btnComprar) {
-               btnComprar.addEventListener("click", () => {
-               const emailUsuario = getCookie("email"); // Pegue o e-mail do cookie na hora do clique!
-               comprarProduto(produto.id, emailUsuario);
-              });
             }
         });
 
@@ -132,7 +125,12 @@ async function listaProdutoClientes() {
                     <p id="nomeProduto${index + 1}" class="preto nomeProduto"><b>${produto.nome}</b></p>
                     <p id="descricaoProduto${index + 1}" class="preto descricaoProduto">${produto.descricao}</p>
                     <div class="botoes">
-                        <button class="botao verde" id="comprarProduto${produto.id}">Comprar</button>
+                        <div class="contador">
+                            <button class="menos roxo">-</button>
+                            <input type="number" class="quantidade branco" id="quantidadeProduto${produto.id}" value="1" min="1">
+                            <button class="mais roxo">+</button>
+                        </div>
+                        <button class="botaoProduto branco" id="comprarProduto${produto.id}">Comprar</button>
                     </div>
                 </div>
             `;
@@ -140,13 +138,26 @@ async function listaProdutoClientes() {
             lista.appendChild(divProduto);
 
             const btnComprar = document.getElementById(`comprarProduto${produto.id}`);
-
             if (btnComprar) {
                 btnComprar.addEventListener("click", () => {
-                 const emailUsuario = getCookie("email"); // Pegue o e-mail do cookie na hora do clique!
-                 comprarProduto(produto.id, emailUsuario);
-        });
+                    const emailUsuario = getCookie("email");
+                    comprarProduto(produto.id, emailUsuario);
+                });
             }
+
+            const btnMais = divProduto.querySelector(".mais");
+            const btnMenos = divProduto.querySelector(".menos");
+            const inputQuantidade = divProduto.querySelector(".quantidade");
+
+            btnMais.addEventListener("click", () => {
+                inputQuantidade.value = parseInt(inputQuantidade.value) + 1;
+            });
+
+            btnMenos.addEventListener("click", () => {
+                if (parseInt(inputQuantidade.value) > 1) {
+                    inputQuantidade.value = parseInt(inputQuantidade.value) - 1;
+                }
+            });
         });
 
     } catch (erro) {
@@ -297,12 +308,11 @@ async function editarProduto(id) {
     }
 }*/
 // Supondo que você já tem o e-mail do usuário salvo em uma variável
-async function comprarProduto(idProduto, emailUsuario) {
-    console.log("Enviando para o back-end:", idProduto, emailUsuario); // Adicione isso!
+async function comprarProduto(idProduto, emailUsuario, quantidade) {
     const resposta = await fetch("http://localhost:3000/comprar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idProduto, email: emailUsuario })
+        body: JSON.stringify({ idProduto, email: emailUsuario, quantidade })
     });
     const resultado = await resposta.json();
     if (resultado.sucesso) {
