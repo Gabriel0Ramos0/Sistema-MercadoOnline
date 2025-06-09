@@ -13,6 +13,9 @@ export function inicializarPopupUsuario() {
   const nomeCliente = getCookie("nomeCliente");
 
   if (!idEmpresa && nomeCliente) {
+    iconeUsuario.src = "./assets/icone/carrinho.png";
+    iconeUsuario.style.marginLeft = "10px";
+    iconeUsuario.style.marginRight = "15px";
     return;
   }
 

@@ -246,3 +246,7 @@
     -webkit-appearance: none;
     margin: 0;
 }
+
+#pesquisaProduto {
+    width: 200px;
+}

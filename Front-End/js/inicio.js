@@ -36,6 +36,8 @@ function carregarDados() {
     if (idEmpresa) {
         listaProdutos(idEmpresa);
     } else if (!idEmpresa && nomeCliente) {
+        document.getElementById("adicionar").style.display = "none";
+        document.getElementById("pesquisas").style.display = "block";
         listaProdutoClientes();
     }
 }
@@ -398,7 +400,23 @@ async function confirmarExclusao() {
     }
 }
 
+function buscarProduto() {
+    const termoBusca = document.getElementById("pesquisaProduto").value.trim().toLowerCase();
+    const listaProdutos = document.getElementById("listaProdutos");
+    const produtos = listaProdutos.getElementsByClassName("produto");
+
+    Array.from(produtos).forEach(produto => {
+        const nomeProduto = produto.querySelector(".nomeProduto").textContent.toLowerCase();
+
+        if (nomeProduto.includes(termoBusca)) {
+            produto.style.display = "block";
+        } else {
+            produto.style.display = "none";
+        }
+    });
+}
+
 export {
     carregarDados, sair, adicionarProduto, adicionarProdutoNovo, novaFotoProduto,
-    salvarEdicao, cancelar, confirmarExclusao, getCookie
+    salvarEdicao, cancelar, confirmarExclusao, buscarProduto, getCookie
 }
