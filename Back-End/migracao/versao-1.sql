@@ -35,6 +35,7 @@ CREATE TABLE `produto` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(254) NOT NULL,
   `descricao` varchar(254) NOT NULL,
+  `quantidade` int NOT NULL,
   `id_empresa` int NOT NULL,
   `id_imagem` int DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -44,14 +45,15 @@ CREATE TABLE `produto` (
   CONSTRAINT `id-imagem` FOREIGN KEY (`id_imagem`) REFERENCES `imagem` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Ajustando conforme a necessidade da 3 avaliação, adicionando quantidade de estoque.
 # Inserindo produtos na tabela:
 
 INSERT INTO `produto` VALUES 
-(1,'Tênis Triple S Sneaker in Black','Tênis Triple S em espuma dupla preta e malha.',1,4),
-(2,'Tênis Puma RS 3.0 Future Vintagee Azul','Tênis que mistura estilo retrô com tecnologia moderna, oferecendo conforto, respirabilidade e tração. Ideal para o dia a dia, combina com diversos estilos.',1,3),
-(3,'Tênis Old Skool','O maior clássico da Vans, o tênis Old Skool foi o primeiro a apresentar a icônica sidestripe na lateral para o mundo.',1,2),
-(4,'Tênis Nike Air Max Scorpion Flyknit','Tênis com amortecimento avançado, tecido leve e macio, feito com materiais reciclados e boa tração.',1,1),
-(5,'Tênis Voador','faz você VOAR',2,2);
+(1,'Tênis Triple S Sneaker in Black','Tênis Triple S em espuma dupla preta e malha.',10,1,4),
+(2,'Tênis Puma RS 3.0 Future Vintagee Azul','Tênis que mistura estilo retrô com tecnologia moderna, oferecendo conforto, respirabilidade e tração. Ideal para o dia a dia, combina com diversos estilos.',8,1,3),
+(3,'Tênis Old Skool','O maior clássico da Vans, o tênis Old Skool foi o primeiro a apresentar a icônica sidestripe na lateral para o mundo.',15,1,2),
+(4,'Tênis Nike Air Max Scorpion Flyknit','Tênis com amortecimento avançado, tecido leve e macio, feito com materiais reciclados e boa tração.',5,1,1),
+(5,'Tênis Voador','faz você VOAR',6,2,2);
 
 #Criar Tabela de usuario:
 
@@ -69,7 +71,7 @@ CREATE TABLE `usuario` (
   CONSTRAINT `id_empresa` FOREIGN KEY (`id_empresa`) REFERENCES `empresa` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Ajustando conforme a necessidade da 3 avaliação
+-- Ajustando conforme a necessidade da 3 avaliação, adicionando criptografia de senha.
 
 # Inserindo usuario na tabela:
 
@@ -88,7 +90,7 @@ CREATE TABLE `cliente` (
   `email` varchar(250) NOT NULL,
   `senha` varchar(250) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 #criar Tabela de transicao:
 
@@ -101,4 +103,4 @@ CREATE TABLE `carrinho` (
   KEY `id_produto_idx` (`id_produto`),
   CONSTRAINT `id_cliente` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id`),
   CONSTRAINT `id_produto` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

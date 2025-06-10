@@ -147,7 +147,7 @@ server.get('/produto', async (req, res) => {
     }
 
     const [rows] = await pool.query(`
-      SELECT p.id, p.nome, p.descricao, p.id_empresa, i.link AS imagem
+      SELECT p.id, p.nome, p.descricao, p.quantidade, p.id_empresa, i.link AS imagem
       FROM produto p
       LEFT JOIN imagem i ON p.id_imagem = i.id
       WHERE p.id_empresa = ?
@@ -165,17 +165,17 @@ server.get('/produto', async (req, res) => {
 const path = require("path");
 
 server.post('/produto', async (req, res) => {
-  const { nome, descricao, id_empresa, imagemBase64 } = req.body;
+  const { nome, descricao, quantidade, id_empresa, imagemBase64 } = req.body;
 
-  if (!nome || !descricao || !id_empresa) {
+  if (!nome || !descricao || quantidade || !id_empresa) {
     return res.status(400).send("Todos os campos são obrigatórios.");
   }
 
   try {
     // 1. Insere o produto sem imagem inicialmente
     const [result] = await pool.query(
-      'INSERT INTO produto (nome, descricao, id_empresa) VALUES (?, ?, ?)',
-      [nome, descricao, id_empresa]
+      'INSERT INTO produto (nome, descricao, quantidade, id_empresa) VALUES (?, ?, ?)',
+      [nome, descricao, quantidade, id_empresa]
     );
 
     const idProduto = result.insertId;
@@ -218,7 +218,7 @@ server.post('/produto', async (req, res) => {
     // 6. Resposta final
     res.status(201).json({
       sucesso: true,
-      produto: { id: idProduto, nome, descricao, id_empresa, id_imagem: idImagem }
+      produto: { id: idProduto, nome, descricao, quantidade, id_empresa, id_imagem: idImagem }
     });
 
   } catch (err) {
@@ -239,7 +239,7 @@ server.put('/produto/:id', async (req, res) => {
   try {
     // Atualiza nome, descrição e empresa
     const [result] = await pool.query(
-      'UPDATE produto SET nome = ?, descricao = ?, id_empresa = ? WHERE id = ?',
+      'UPDATE produto SET nome = ?, descricao = ?, quantidade = ?, id_empresa = ? WHERE id = ?',
       [nome, descricao, id_empresa, id]
     );
 
@@ -633,12 +633,7 @@ server.get('/solicitar-compra/:token', async (req, res) => {
 server.get('/lista-produtos', async (req, res) => {
   try {
     const [produtos] = await pool.query(`
-      SELECT 
-        produto.id, 
-        produto.nome, 
-        produto.descricao, 
-        imagem.link AS imagem,
-        empresa.nome AS empresa
+      SELECT produto.id, produto.nome, produto.descricao, produto.quantidade, imagem.link AS imagem, empresa.nome AS empresa
       FROM produto
       LEFT JOIN imagem ON produto.id_imagem = imagem.id
       INNER JOIN empresa ON produto.id_empresa = empresa.id
