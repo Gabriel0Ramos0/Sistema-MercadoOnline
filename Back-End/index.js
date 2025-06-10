@@ -5,6 +5,7 @@ const mysql = require("mysql2/promise");
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
+const jwt = require('jsonwebtoken');
 
 const transporterCompra = nodemailer.createTransport({
   service: 'gmail',
