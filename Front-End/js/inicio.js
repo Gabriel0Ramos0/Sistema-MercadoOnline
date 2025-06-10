@@ -432,6 +432,35 @@ async function comprarProduto() {
         aviso("Erro ao enviar e-mail de confirmação.", "erro");
     }
 }
+export async function finalizarCompraComConfirmacao() {
+    const idCliente = getCookie("idCliente");
+    const emailUsuario = getCookie("email");
+
+    // Pegue os produtos do carrinho (ajuste conforme sua estrutura)
+    const listaCarrinho = document.getElementById("listaCarrinho");
+    const produtos = [];
+    listaCarrinho.querySelectorAll(".item-carrinho").forEach(item => {
+        const idProduto = item.getAttribute("data-id-produto");
+        const quantidade = item.querySelector(".quantidade").textContent || 1;
+        produtos.push({ idProduto, quantidade });
+    });
+
+    try {
+        const resposta = await fetch("http://localhost:3000/comprar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idCliente, email: emailUsuario, produtos })
+        });
+        const resultado = await resposta.json();
+        if (resultado.sucesso) {
+            aviso("E-mail de confirmação enviado!", "sucesso");
+        } else {
+            aviso("Erro ao enviar e-mail de confirmação.", "erro");
+        }
+    } catch (erro) {
+        aviso("Erro de conexão com o servidor!", "erro");
+    }
+}
 
 async function limparCarrinho() {
     const id = getCookie("idCliente");
