@@ -230,9 +230,9 @@ server.post('/produto', async (req, res) => {
 // Atualizar um produto
 server.put('/produto/:id', async (req, res) => {
   const { id } = req.params;
-  const { nome, descricao, id_empresa, imagemBase64 } = req.body;
+  const { nome, descricao, quantidade, id_empresa, imagemBase64 } = req.body;
 
-  if (!nome || !descricao || !id_empresa) {
+  if (!nome || !descricao || quantidade || !id_empresa) {
     return res.status(400).send("Todos os campos são obrigatórios.");
   }
 
@@ -240,7 +240,7 @@ server.put('/produto/:id', async (req, res) => {
     // Atualiza nome, descrição e empresa
     const [result] = await pool.query(
       'UPDATE produto SET nome = ?, descricao = ?, quantidade = ?, id_empresa = ? WHERE id = ?',
-      [nome, descricao, id_empresa, id]
+      [nome, descricao, id_empresa, quantidade, id]
     );
 
     if (result.affectedRows === 0) {
@@ -388,21 +388,21 @@ server.get('/carrinho', async (req, res) => {
 });
 // Adcionar produto ao carrinho
 server.post('/carrinho', async (req, res) => {
-  const { id, id_cliente, id_produto } = req.body;
+  const { id, id_cliente, id_produto, qta_carrinho } = req.body;
 
-  if (id, id_cliente, id_produto) {
+  if (id, id_cliente, id_produto, qta_carrinho) {
     return res.status(400).send("Todos os campos são obrigatórios.");
   }
 
   try {
     const [result] = await pool.query(
-      'INSERT INTO carrinho (id_cliente, id_produto) VALUES (?, ?)',
-      [id_cliente, id_produto]
+      'INSERT INTO carrinho (id_cliente, id_produto, qta_carrinho) VALUES (?, ?, ?)',
+      [id_cliente, id_produto, qta_carrinho]
     );
 
     res.status(201).json({
       mensagem: "carrinho cadastrado com sucesso!",
-      usuario: { id: result.insertId,id_cliente, id_produto }
+      usuario: { id: result.insertId,id_cliente, id_produto, qta_carrinho }
     });
 
   } catch (err) {
@@ -429,8 +429,8 @@ server.delete('/carrinho/:id', async (req, res) => {
   }
 });
 
-// Apagar carrinho por cliente que quer finalizar compra ou limpar carrinho
-server.delete('/Limpar-ou-compra-carrinho', async (req, res) => {
+// Apagar carrinho por cliente completo
+server.delete('/Limpar-carrinho', async (req, res) => {
   const { id_cliente } = req.params;
 
   try {
@@ -447,6 +447,38 @@ server.delete('/Limpar-ou-compra-carrinho', async (req, res) => {
   }
 });
 
+// Finalizar compra e atualizar estoque
+server.delete('/finalizar-compra/:id_cliente', async (req, res) => {
+  const { id_cliente } = req.params;
+
+  try {
+    // Buscar produtos e quantidades no carrinho usando qta_carrinho
+    const [itensCarrinho] = await pool.query(
+      'SELECT id_produto, qta_carrinho FROM carrinho WHERE id_cliente = ?',
+      [id_cliente]
+    );
+
+    if (itensCarrinho.length === 0) {
+      return res.status(404).send("Carrinho vazio.");
+    }
+
+    // Atualizar estoque para cada produto
+    for (const item of itensCarrinho) {
+      await pool.query(
+        'UPDATE produto SET quantidade = quantidade - ? WHERE id = ? AND quantidade >= ?',
+        [item.qta_carrinho, item.id_produto, item.qta_carrinho]
+      );
+    }
+
+    // Apagar carrinho após atualizar estoque
+    await pool.query('DELETE FROM carrinho WHERE id_cliente = ?', [id_cliente]);
+
+    res.send("Compra finalizada e estoque atualizado com sucesso.");
+  } catch (err) {
+    console.error("Erro ao finalizar compra:", err);
+    res.status(500).send("Erro ao finalizar compra");
+  }
+});
 
 // Validar login de administrador
 server.post('/validar-login', async (req, res) => {

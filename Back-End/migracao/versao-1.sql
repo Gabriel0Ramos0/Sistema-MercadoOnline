@@ -98,6 +98,7 @@ CREATE TABLE `carrinho` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_cliente` int NOT NULL,
   `id_produto` int NOT NULL,
+  `qta_carrinho` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_cliente_idx` (`id_cliente`),
   KEY `id_produto_idx` (`id_produto`),
