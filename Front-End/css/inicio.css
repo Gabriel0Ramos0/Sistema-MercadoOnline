@@ -250,3 +250,36 @@
 #pesquisaProduto {
     width: 200px;
 }
+
+#carrinho {
+    position: fixed;
+    top: 20px;
+    color: black;
+}
+
+#carrinho h3 {
+    color: #152536;
+    font-weight: 900;
+    font-family: arial;
+    letter-spacing: -1px;
+}
+
+#carrinho h3, #carrinho p {
+    margin-left: 10px;
+}
+
+#listaCarrinho {
+    height: 280px;
+    border-top: 1px solid #ced4da;
+    border-bottom: 1px solid #ced4da;
+}
+
+#botoesCarrinho {
+    padding: 10px;
+}
+
+#fecharCarrinho {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}

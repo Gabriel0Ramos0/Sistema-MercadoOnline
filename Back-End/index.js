@@ -165,6 +165,16 @@ server.get('/produto', async (req, res) => {
   }
 });
 
+server.get('/produtosCliente', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`SELECT * from produto;`,);
+    res.json(rows);
+  } catch (err) {
+    console.error("Erro ao buscar produto:", err);
+    res.status(500).send("Erro ao buscar produto");
+  }
+});
+
 // Criar uma nova produto
 const path = require("path");
 
@@ -410,9 +420,9 @@ server.get('/carrinho', async (req, res) => {
 
 // Adcionar produto ao carrinho
 server.post('/carrinho', async (req, res) => {
-  const { id, id_cliente, id_produto, qta_carrinho } = req.body;
+  const {id_cliente, id_produto, qta_carrinho } = req.body;
 
-  if (id, id_cliente, id_produto, qta_carrinho) {
+  if (id_cliente, id_produto, qta_carrinho) {
     return res.status(400).send("Todos os campos são obrigatórios.");
   }
 

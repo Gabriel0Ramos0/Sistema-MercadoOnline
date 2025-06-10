@@ -132,18 +132,17 @@ async function listaProdutoClientes() {
                             <input type="number" class="quantidade branco" id="quantidadeProduto${produto.id}" value="1" min="1">
                             <button class="mais roxo">+</button>
                         </div>
-                        <button class="botaoProduto branco" id="comprarProduto${produto.id}">Comprar</button>
+                        <button class="botaoProduto branco" id="adicionarProdutoCarrinho${produto.id}">Comprar</button>
                     </div>
                 </div>
             `;
 
             lista.appendChild(divProduto);
 
-            const btnComprar = document.getElementById(`comprarProduto${produto.id}`);
+            const btnComprar = document.getElementById(`adicionarProdutoCarrinho${produto.id}`);
             if (btnComprar) {
                 btnComprar.addEventListener("click", () => {
-                    const emailUsuario = getCookie("email");
-                    comprarProduto(produto.id, emailUsuario);
+                    adicionarProdutoCarrinho(produto.id);
                 });
             }
 
@@ -245,6 +244,7 @@ function cancelar() {
     document.getElementById("produtoNovo").style.display = "none";
     document.getElementById("NomeProdutoNovo").value = "";
     document.getElementById("informacaoProduto").value = "";
+    document.querySelector(".quantidade").value = 1;
     document.getElementById("adicionarProduto").style.display = "block";
     document.getElementById("salvarEdicao").style.display = "none";
     document.getElementById("produtoExcluir").style.display = "none";
@@ -286,25 +286,6 @@ async function editarProduto(id) {
     } catch (erro) {
         console.error("Erro ao tentar salvar produtos:", erro);
         aviso("Erro de conexão com o servidor!", "erro");
-    }
-}
-
-function adicionarProdutoCarrinho(idProduto) {
-    // Função para adicionar produto ao carrinho
-}
-
-// Supondo que você já tem o e-mail do usuário salvo em uma variável
-async function comprarProduto(idProduto, emailUsuario, quantidade) {
-    const resposta = await fetch("http://localhost:3000/comprar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idProduto, email: emailUsuario, quantidade })
-    });
-    const resultado = await resposta.json();
-    if (resultado.sucesso) {
-        aviso("E-mail de confirmação enviado!", "sucesso");
-    } else {
-        aviso("Erro ao enviar e-mail de confirmação.", "erro");
     }
 }
 
@@ -402,7 +383,85 @@ function buscarProduto() {
     });
 }
 
+async function adicionarProdutoCarrinho(idProduto) {
+    const idCliente = getCookie("idCliente");
+    const quantidade = document.getElementById("quantidadeCarrinho").textContent.trim();
+
+    if (!idProduto) {
+        aviso("Selecione um produto para adicionar ao carrinho!", "alerta");
+        return;
+    }
+
+    try {
+        const resposta = await fetch(`http://localhost:3000/produtosCliente`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        const produtos = await resposta.json();
+        const produto = produtos.find(p => p.id === idProduto);
+        
+        if (!produto) {
+            aviso("Produto não encontrado!", "alerta");
+            return;
+        }
+
+        // adicionar try para requisição fetch de post carrinho
+
+        aviso(`Produto ${produto.nome} adicionado ao carrinho!`, "sucesso");
+    } catch (erro) {
+        console.error("Erro ao tentar selecionar produto:", erro);
+        aviso("Erro de conexão com o servidor!", "erro");
+        return;
+    }
+}
+
+async function comprarProduto() {
+    // aqui voce vai dar consts e pegar os ids que precisa, email, quantidade total...
+
+    const resposta = await fetch("http://localhost:3000/comprar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idProduto, email: emailUsuario, quantidade })
+    });
+    const resultado = await resposta.json();
+    if (resultado.sucesso) {
+        aviso("E-mail de confirmação enviado!", "sucesso");
+    } else {
+        aviso("Erro ao enviar e-mail de confirmação.", "erro");
+    }
+}
+
+async function limparCarrinho() {
+    const id = getCookie("idCliente");
+    const listaCarrinho = document.getElementById("listaCarrinho");
+
+    if (!listaCarrinho || listaCarrinho.children.length === 0) {
+        aviso("Carrinho já está vazio!", "alerta");
+        return;
+    }
+
+    try {
+        const resposta = await fetch(`http://localhost:3000/Limpar-carrinho/${id}`, {
+            method: "DELETE"
+        });
+
+        if (resposta.ok) {
+            aviso("Carrinho Limpo com Sucesso!", "sucesso");
+        } else if (resposta.status === 404) {
+            aviso("Produtos no carrinho não encontrado.", "alerta");
+        } else {
+            aviso("Erro ao limpar o carrinho.", "erro");
+        }
+    } catch (error) {
+        console.error("Erro ao limpar carrinho:", error);
+        aviso("Erro de conexão com o servidor!", "erro");
+    }
+}
+
 export {
     carregarDados, sair, adicionarProduto, adicionarProdutoNovo, novaFotoProduto,
-    salvarEdicao, cancelar, confirmarExclusao, buscarProduto, getCookie
+    salvarEdicao, cancelar, confirmarExclusao, buscarProduto, comprarProduto,
+    limparCarrinho, getCookie
 }
