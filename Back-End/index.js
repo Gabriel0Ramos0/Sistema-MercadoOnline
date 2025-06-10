@@ -8,7 +8,7 @@ const { v4: uuidv4 } = require('uuid');
 
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const segredoJWT = process.env.SECRETO_JWT;
+const segredoJWT = process.env.JWT_SECRET
 
 const transporterCompra = nodemailer.createTransport({
   service: 'gmail',
@@ -348,6 +348,23 @@ server.delete('/produto/:id', async (req, res) => {
   }
 });
 
+// Retorna todos os produtos
+server.get('/lista-produtos', async (req, res) => {
+  try {
+    const [produtos] = await pool.query(`
+      SELECT produto.id, produto.nome, produto.descricao, produto.quantidade, imagem.link AS imagem, empresa.nome AS empresa
+      FROM produto
+      LEFT JOIN imagem ON produto.id_imagem = imagem.id
+      INNER JOIN empresa ON produto.id_empresa = empresa.id
+    `);
+
+    res.json(produtos);
+  } catch (error) {
+    console.error("Erro ao buscar produtos:", error);
+    res.status(500).send("Erro ao buscar produtos.");
+  }
+});
+
 // Referente a tabela de Cliente
 
 // Acessar cliente
@@ -390,6 +407,7 @@ server.get('/carrinho', async (req, res) => {
     res.status(500).send("Erro ao buscar carrinho");
   }
 });
+
 // Adcionar produto ao carrinho
 server.post('/carrinho', async (req, res) => {
   const { id, id_cliente, id_produto, qta_carrinho } = req.body;
@@ -665,24 +683,9 @@ server.get('/solicitar-compra/:token', async (req, res) => {
     res.send("Compra confirmada com sucesso! Obrigado.");
 });
 
-// Retorna todos os produtos
-server.get('/lista-produtos', async (req, res) => {
-  try {
-    const [produtos] = await pool.query(`
-      SELECT produto.id, produto.nome, produto.descricao, produto.quantidade, imagem.link AS imagem, empresa.nome AS empresa
-      FROM produto
-      LEFT JOIN imagem ON produto.id_imagem = imagem.id
-      INNER JOIN empresa ON produto.id_empresa = empresa.id
-    `);
-
-    res.json(produtos);
-  } catch (error) {
-    console.error("Erro ao buscar produtos:", error);
-    res.status(500).send("Erro ao buscar produtos.");
-  }
-});
-
 const PORTA = 3000;
+
 server.listen(PORTA, () => { 
   console.log(`Servidor rodando na porta ${PORTA}`);
+  console.log('Segredo JWT:', process.env.JWT_SECRET);
 });
