@@ -20,6 +20,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const sairExclusao = document.getElementById("cancelarExclusao");
     const buscar = document.getElementById("buscar");
     const fecharTelaCarrinho = document.getElementById("fecharCarrinho");
+    const maisProdutos = document.getElementById("mais");
+    const menosProdutos = document.getElementById("menos");
+    const inputQuantidade = document.querySelector(".quantidade");
 
     if (botaoLogin) {
         botaoLogin.addEventListener("click", realizarLogin);
@@ -43,5 +46,11 @@ document.addEventListener("DOMContentLoaded", () => {
         buscar.addEventListener("click", buscarProduto);
         inicializarPopupUsuario();
         fecharTelaCarrinho.addEventListener("click", fecharCarrinho);
+        maisProdutos.addEventListener("click", () => {
+            inputQuantidade.value = parseInt(inputQuantidade.value) + 1;
+        });
+        menosProdutos.addEventListener("click", () => {
+            inputQuantidade.value = parseInt(inputQuantidade.value) - 1;
+        });
     }
 })

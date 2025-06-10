@@ -79,7 +79,8 @@
 			<div id="listaCarrinho"></div>
 			<div id="totalCarrinho"></div>
 			<button id="limparCarrinho" class="botao roxo">Limpar Carrinho</button>
-			<button id="finalizarCompra" class="botao roxo">Finalizar Compra</button> <!-- Associar ele ao comprar produto -->
+			<button id="finalizarCompra" class="botao roxo">Finalizar Compra</button>
+			<!-- Associar ele ao comprar produto -->
 		</div>
 		<div id="tituloTabela" class="-flex">
 			<p><em>Produtos</em></p>
@@ -107,6 +108,12 @@
 					</div>
 				</div>
 				<div class="botoesProduto -flex" style="justify-content: end;">
+					<div class="contador">
+						<button id="menos" class="menos roxo">-</button>
+						<input type="number" class="quantidade branco" id="quantidadeProduto${produto.id}" value="1"
+							min="1">
+						<button id="mais" class="mais roxo">+</button>
+					</div>
 					<button id="cancelar" class="botao roxo" style="border: 1px solid #7749f8;">Cancelar</button>
 					<button id="adicionarProduto" class="botao branco">Adicionar</button>
 					<button id="salvarEdicao" class="botao branco" style="display: none;">Salvar</button>

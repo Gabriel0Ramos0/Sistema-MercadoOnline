@@ -171,14 +171,14 @@ const path = require("path");
 server.post('/produto', async (req, res) => {
   const { nome, descricao, quantidade, id_empresa, imagemBase64 } = req.body;
 
-  if (!nome || !descricao || quantidade || !id_empresa) {
+  if (!nome || !descricao || !quantidade || !id_empresa) {
     return res.status(400).send("Todos os campos são obrigatórios.");
   }
 
   try {
     // 1. Insere o produto sem imagem inicialmente
     const [result] = await pool.query(
-      'INSERT INTO produto (nome, descricao, quantidade, id_empresa) VALUES (?, ?, ?)',
+      'INSERT INTO produto (nome, descricao, quantidade, id_empresa) VALUES (?, ?, ?, ?)',
       [nome, descricao, quantidade, id_empresa]
     );
 
@@ -236,7 +236,7 @@ server.put('/produto/:id', async (req, res) => {
   const { id } = req.params;
   const { nome, descricao, quantidade, id_empresa, imagemBase64 } = req.body;
 
-  if (!nome || !descricao || quantidade || !id_empresa) {
+  if (!nome || !descricao || !quantidade || !id_empresa) {
     return res.status(400).send("Todos os campos são obrigatórios.");
   }
 
@@ -244,7 +244,7 @@ server.put('/produto/:id', async (req, res) => {
     // Atualiza nome, descrição e empresa
     const [result] = await pool.query(
       'UPDATE produto SET nome = ?, descricao = ?, quantidade = ?, id_empresa = ? WHERE id = ?',
-      [nome, descricao, id_empresa, quantidade, id]
+      [nome, descricao, quantidade, id_empresa, id]
     );
 
     if (result.affectedRows === 0) {

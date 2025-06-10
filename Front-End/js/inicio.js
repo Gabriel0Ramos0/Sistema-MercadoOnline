@@ -199,6 +199,7 @@ async function adicionarProdutoNovo() {
     const nome = document.getElementById("NomeProdutoNovo").value.trim();
     const descricao = document.getElementById("informacaoProduto").value.trim();
     const id_empresa = getCookie("idEmpresa");
+    const quantidade = document.querySelector(".quantidade").value.trim();
     const fotoBase64 = document.getElementById("fotoProduto").style.backgroundImage;
 
     if (!nome || !descricao) {
@@ -217,6 +218,7 @@ async function adicionarProdutoNovo() {
             body: JSON.stringify({
                 nome,
                 descricao,
+                quantidade,
                 id_empresa,
                 imagemBase64: base64
             })
@@ -274,10 +276,12 @@ async function editarProduto(id) {
         }
         const nome = document.getElementById("NomeProdutoNovo");
         const descricao = document.getElementById("informacaoProduto");
+        const quantidade = document.querySelector(".quantidade");
         const foto = document.getElementById("fotoProduto");
 
         nome.value = produto.nome || "";
         descricao.value = produto.descricao || "";
+        quantidade.value = produto.quantidade || 1;
         foto.style.backgroundImage = `url(${produto.imagem})`;
     } catch (erro) {
         console.error("Erro ao tentar salvar produtos:", erro);
@@ -307,6 +311,7 @@ async function comprarProduto(idProduto, emailUsuario, quantidade) {
 async function salvarEdicao() {
     const nome = document.getElementById("NomeProdutoNovo").value.trim();
     const descricao = document.getElementById("informacaoProduto").value.trim();
+    const quantidade = document.querySelector(".quantidade").value.trim();
     const id_empresa = getCookie("idEmpresa");
 
     if (!nome || !descricao) {
@@ -327,6 +332,7 @@ async function salvarEdicao() {
             body: JSON.stringify({
                 nome,
                 descricao,
+                quantidade,
                 id_empresa,
                 imagemBase64
             })
