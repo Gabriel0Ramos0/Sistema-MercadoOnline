@@ -401,6 +401,7 @@ async function adicionarProdutoCarrinho(idProduto) {
         });
         const produtos = await resposta.json();
         const produto = produtos.find(p => p.id === idProduto);
+        const nome = produto.nome;
 
         if (!produto) {
             aviso("Produto não encontrado!", "alerta");
@@ -418,6 +419,7 @@ async function adicionarProdutoCarrinho(idProduto) {
                 body: JSON.stringify({
                     id_cliente: idCliente,
                     id_produto: idProduto,
+                    nome: nome,
                     qta_carrinho: quantidade
                 })
             });

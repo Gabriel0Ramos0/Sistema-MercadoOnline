@@ -99,9 +99,10 @@ CREATE TABLE `cliente` (
 #criar Tabela de transicao:
 
 CREATE TABLE `carrinho` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int AUTO_INCREMENT,
   `id_cliente` int NOT NULL,
   `id_produto` int NOT NULL,
+  `nome` varchar(250) NOT NULL,
   `qta_carrinho` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_cliente_idx` (`id_cliente`),

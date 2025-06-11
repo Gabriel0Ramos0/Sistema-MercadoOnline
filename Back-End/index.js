@@ -421,21 +421,21 @@ server.get('/carrinho/:id_cliente', async (req, res) => {
 
 // Adcionar produto ao carrinho
 server.post('/carrinho', async (req, res) => {
-  const {id_cliente, id_produto, qta_carrinho } = req.body;
+  const {id_cliente, id_produto, nome, qta_carrinho } = req.body;
 
-  if (!id_cliente, !id_produto, !qta_carrinho) {
+  if (!id_cliente, !id_produto, !nome, !qta_carrinho) {
     return res.status(400).send("Todos os campos são obrigatórios.");
   }
 
   try {
     const [result] = await pool.query(
-      'INSERT INTO carrinho (id_cliente, id_produto, qta_carrinho) VALUES (?, ?, ?)',
-      [id_cliente, id_produto, qta_carrinho]
+      'INSERT INTO carrinho (id_cliente, id_produto, nome, qta_carrinho) VALUES (?, ?, ?, ?)',
+      [id_cliente, id_produto, nome, qta_carrinho]
     );
 
     res.status(201).json({
       mensagem: "carrinho cadastrado com sucesso!",
-      usuario: { id: result.insertId,id_cliente, id_produto, qta_carrinho }
+      usuario: { id: result.insertId,id_cliente, id_produto, nome, qta_carrinho }
     });
 
   } catch (err) {
