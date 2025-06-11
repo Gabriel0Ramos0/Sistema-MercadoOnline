@@ -51,6 +51,7 @@
     height: 350px;
     margin-top: 10px;
     margin-bottom: 60px;
+    position: relative;
 }
 
 .produto img {
@@ -76,6 +77,18 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     display: block;
+}
+
+.quantidade-disponivel {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: #6f42c1;
+    color: white;
+    font-size: 12px;
+    padding: 4px 6px;
+    border-top-left-radius: 5px;
+    border-bottom-right-radius: 15px;
 }
 
 .descricaoProduto {
@@ -258,6 +271,7 @@
     position: fixed;
     top: 20px;
     color: black;
+    z-index: 1;
 }
 
 #carrinho h3 {

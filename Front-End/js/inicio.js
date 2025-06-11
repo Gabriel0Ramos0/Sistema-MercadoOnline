@@ -122,6 +122,7 @@ async function listaProdutoClientes() {
             divProduto.classList.add("produto");
 
             divProduto.innerHTML = `
+                <div class="quantidade-disponivel">${produto.quantidade} un.</div>
                 <img src="${produto.imagem}" alt="Imagem do Produto">
                 <div class="descricao">
                     <p id="nomeProduto${index + 1}" class="preto nomeProduto"><b>${produto.nome}</b></p>
@@ -402,9 +403,15 @@ async function adicionarProdutoCarrinho(idProduto) {
         const produtos = await resposta.json();
         const produto = produtos.find(p => p.id === idProduto);
         const nome = produto.nome;
+        const quantidadeValida = produto.quantidade;
 
         if (!produto) {
             aviso("Produto não encontrado!", "alerta");
+            return;
+        }
+
+        if (quantidade <= 0 || quantidade > quantidadeValida) {
+            aviso(`Quantidade inválida! Disponível: ${quantidadeValida}`, "alerta");
             return;
         }
 
