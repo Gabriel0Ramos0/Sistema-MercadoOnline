@@ -444,6 +444,27 @@ server.post('/carrinho', async (req, res) => {
   }
 });
 
+server.put('/carrinho/:idCliente/:idProduto', async (req, res) => {
+  const { idCliente, idProduto } = req.params;
+  const { quantidade } = req.body;
+
+  try {
+    const [result] = await pool.query(
+      'UPDATE carrinho SET qta_carrinho = ? WHERE id_cliente = ? AND id_produto = ?',
+      [quantidade, idCliente, idProduto]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send("Item não encontrado no carrinho.");
+    }
+
+    res.send("Quantidade do produto atualizada no carrinho.");
+  } catch (erro) {
+    console.error("Erro ao atualizar quantidade:", erro);
+    res.status(500).send("Erro ao atualizar o carrinho.");
+  }
+});
+
 // Excluir um produto do carrinho
 server.delete('/carrinho/:idCliente/:idProduto', async (req, res) => {
   const { idCliente, idProduto } = req.params;

@@ -428,11 +428,17 @@ async function adicionarProdutoCarrinho(idProduto) {
         const novaQuantidadeTotal = quantidadeNoCarrinho + parseInt(quantidade);
 
         if (novaQuantidadeTotal > quantidadeValida) {
-            aviso(`Você já adicionou o máximo permitido (${quantidadeValida}) desse produto.`, "alerta");
+            if (quantidadeNoCarrinho === quantidadeValida) {
+                aviso("Você já atingiu o limite máximo deste produto no carrinho.", "alerta");
+            } else  {
+                atualizarQuantCarrinho(idCliente, idProduto, produto, quantidadeValida);
+            }
             return;
         }
 
-        try {
+        if (itemExistente) {
+            atualizarQuantCarrinho(idCliente, idProduto, produto, novaQuantidadeTotal);
+        } else {
             const respostaCarrinho = await fetch(`http://localhost:3000/carrinho`, {
                 method: "POST",
                 headers: {
@@ -448,15 +454,9 @@ async function adicionarProdutoCarrinho(idProduto) {
             if (respostaCarrinho.ok) {
                 aviso(`Produto ${produto.nome} adicionado ao carrinho!`, "sucesso");
                 atualizarCarrinho();
-            } else if (respostaCarrinho.status === 404) {
-                aviso("Produto não encontrado.", "alerta");
             } else {
                 aviso("Erro ao adicionar o produto.", "erro");
             }
-        } catch (error) {
-            console.error("Erro ao adicionar produto ao carrinho:", error);
-            aviso("Erro ao adicionar produto ao carrinho!", "erro");
-            return;
         }
     } catch (erro) {
         console.error("Erro ao tentar selecionar produto:", erro);
@@ -512,6 +512,29 @@ async function atualizarCarrinho() {
 
     } catch (erro) {
         console.error("Erro ao atualizar carrinho:", erro);
+    }
+}
+
+async function atualizarQuantCarrinho(idCliente, idProduto, produto, novaQuantidadeTotal) {
+    try {
+        const respostaUpdate = await fetch(`http://localhost:3000/carrinho/${idCliente}/${idProduto}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                quantidade: novaQuantidadeTotal
+            })
+        });
+
+        if (respostaUpdate.ok) {
+            aviso(`Quantidade do produto ${produto.nome} atualizada no carrinho!`, "sucesso");
+            atualizarCarrinho();
+        } else {
+            aviso("Erro ao atualizar o carrinho.", "erro");
+        }
+    } catch (erro) {
+        console.error("Erro ao atualizar quantidade no carrinho:", erro);
+        aviso("Erro de conexão com o servidor!", "erro");
+        return;
     }
 }
 
