@@ -169,20 +169,30 @@ server.get('/produto', async (req, res) => {
   }
 });
 
+server.get('/produtosCliente', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`SELECT * from produto;`,);
+    res.json(rows);
+  } catch (err) {
+    console.error("Erro ao buscar produto:", err);
+    res.status(500).send("Erro ao buscar produto");
+  }
+});
+
 // Criar uma nova produto
 const path = require("path");
 
 server.post('/produto', async (req, res) => {
   const { nome, descricao, quantidade, id_empresa, imagemBase64 } = req.body;
 
-  if (!nome || !descricao || quantidade || !id_empresa) {
+  if (!nome || !descricao || !quantidade || !id_empresa) {
     return res.status(400).send("Todos os campos são obrigatórios.");
   }
 
   try {
     // 1. Insere o produto sem imagem inicialmente
     const [result] = await pool.query(
-      'INSERT INTO produto (nome, descricao, quantidade, id_empresa) VALUES (?, ?, ?)',
+      'INSERT INTO produto (nome, descricao, quantidade, id_empresa) VALUES (?, ?, ?, ?)',
       [nome, descricao, quantidade, id_empresa]
     );
 
@@ -240,7 +250,7 @@ server.put('/produto/:id', async (req, res) => {
   const { id } = req.params;
   const { nome, descricao, quantidade, id_empresa, imagemBase64 } = req.body;
 
-  if (!nome || !descricao || quantidade || !id_empresa) {
+  if (!nome || !descricao || !quantidade || !id_empresa) {
     return res.status(400).send("Todos os campos são obrigatórios.");
   }
 
@@ -248,7 +258,7 @@ server.put('/produto/:id', async (req, res) => {
     // Atualiza nome, descrição e empresa
     const [result] = await pool.query(
       'UPDATE produto SET nome = ?, descricao = ?, quantidade = ?, id_empresa = ? WHERE id = ?',
-      [nome, descricao, id_empresa, quantidade, id]
+      [nome, descricao, quantidade, id_empresa, id]
     );
 
     if (result.affectedRows === 0) {
@@ -414,10 +424,10 @@ server.get('/carrinho', async (req, res) => {
 
 // Adcionar produto ao carrinho
 server.post('/carrinho', async (req, res) => {
-  const { id, id_cliente, id_produto, qta_carrinho } = req.body;
+  const {id_cliente, id_produto, qta_carrinho } = req.body;
 
-  if (!id || !id_cliente || !id_produto || !qta_carrinho) {
-  return res.status(400).send("Todos os campos são obrigatórios.");
+  if (id_cliente, id_produto, qta_carrinho) {
+    return res.status(400).send("Todos os campos são obrigatórios.");
   }
 
   try {
@@ -503,6 +513,35 @@ server.delete('/finalizar-compra/:id_cliente', async (req, res) => {
   } catch (err) {
     console.error("Erro ao finalizar compra:", err);
     res.status(500).send("Erro ao finalizar compra");
+  }
+});
+
+// Validar login de cliente
+server.post('/validar-login-cliente', async (req, res) => {
+  const { email, senha } = req.body;
+
+  try {
+    const [cliente] = await pool.query('SELECT * FROM cliente WHERE email = ?', [email]);
+
+    if (!cliente || cliente.length === 0) {
+      return res.status(400).json({ sucesso: false, mensagem: 'Cliente não encontrado.' });
+    }
+
+    const senhaCorreta = await bcrypt.compare(senha, cliente[0].senha);
+
+    if (senhaCorreta) {
+      res.json({
+        sucesso: true,
+        id: cliente[0].id,
+        nome: cliente[0].nome
+      });
+    } else {
+      res.status(400).json({ sucesso: false, mensagem: 'Senha incorreta.' });
+    }
+
+  } catch (erro) {
+    console.error("Erro ao validar login:", erro);
+    res.status(500).send("Erro no servidor.");
   }
 });
 
@@ -611,27 +650,29 @@ server.post('/criar-conta-cliente', async (req, res) => {
 });
 
 // No topo do arquivo:
-let comprasPendentes = {}; // Em produção, use banco de dados
+// No topo do arquivo, já deve ter:
 
-// Rota para iniciar compra e enviar e-mail de confirmação
+let comprasPendentes = {};
+
 server.post('/comprar', async (req, res) => {
-    const { idProduto, email, quantidade } = req.body;
-    if (!idProduto || !email || !quantidade || quantidade <= 0) {
+    console.log("REQ BODY:", req.body); // Veja o que chega!
+    const { idCliente, email, produtos } = req.body;
+    if (!idCliente || !email || !produtos || !produtos.length) {
         return res.status(400).json({ sucesso: false, mensagem: "Dados inválidos." });
     }
 
     const token = uuidv4();
-    comprasPendentes[token] = { idProduto, email };
+    comprasPendentes[token] = { idCliente, email, produtos }; // Salve os produtos!
 
-    const linkConfirmacao = `http://localhost:3000/solicitar-compra/${token}`;
+    const linkConfirmacao = `http://localhost:3000/confirmar-compra/${token}`;
 
     try {
         await transporterCompra.sendMail({
-            from: 'luizfernandomendesalbertongmail.com',
+            from: 'luizfernandomendesalberton@gmail.com',
             to: email,
             subject: 'Confirme sua compra',
             html: `
-                <p>Clique no botão abaixo para confirmar sua compra:</p>
+                <p>Olá! Clique no botão abaixo para confirmar sua compra:</p>
                 <a href="${linkConfirmacao}" style="padding:10px 20px;background:#7749f8;color:#fff;text-decoration:none;border-radius:5px;">Confirmar Compra</a>
             `
         });
@@ -643,16 +684,14 @@ server.post('/comprar', async (req, res) => {
 });
 
 // Rota para confirmar a compra
-server.get('/solicitar-compra/:token', async (req, res) => {
+server.get('/confirmar-compra/:token', async (req, res) => {
     const { token } = req.params;
     const compra = comprasPendentes[token];
     if (!compra) {
         return res.send("Token inválido ou expirado.");
     }
 
-    // Aqui você pode finalizar a compra no banco de dados
-    // Exemplo: await registrarCompra(compra.email, compra.idProduto);
-
+    // Aqui finalize a compra no banco de dados, limpe o carrinho, etc.
     delete comprasPendentes[token];
 
     res.send("Compra confirmada com sucesso! Obrigado.");
