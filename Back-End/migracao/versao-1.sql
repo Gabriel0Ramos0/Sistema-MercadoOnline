@@ -1,4 +1,8 @@
 -- versao-1
+-- Criando o banco de dados:
+
+CREATE DATABASE IF NOT EXISTS `avaliacao_3` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
 #Criar Tabela de empresa:
 
 CREATE TABLE `empresa` (
