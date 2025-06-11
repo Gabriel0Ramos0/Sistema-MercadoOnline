@@ -445,20 +445,23 @@ server.post('/carrinho', async (req, res) => {
 });
 
 // Excluir um produto do carrinho
-server.delete('/carrinho/:id', async (req, res) => {
-  const { id } = req.params;
+server.delete('/carrinho/:idCliente/:idProduto', async (req, res) => {
+  const { idCliente, idProduto } = req.params;
 
   try {
-    const [result] = await pool.query('DELETE FROM carrinho WHERE id = ?', [id]);
+    const [result] = await pool.query(
+      'DELETE FROM carrinho WHERE id_cliente = ? AND id_produto = ?',
+      [idCliente, idProduto]
+    );
 
     if (result.affectedRows === 0) {
-      return res.status(404).send("carrinho não encontrada.");
+      return res.status(404).send("Produto não encontrado no carrinho.");
     }
 
-    res.send("carrinho excluída com sucesso.");
+    res.send("Produto removido do carrinho com sucesso.");
   } catch (err) {
-    console.error("Erro ao excluir carrinho:", err);
-    res.status(500).send("Erro ao excluir carrinho");
+    console.error("Erro ao excluir item do carrinho:", err);
+    res.status(500).send("Erro ao excluir item do carrinho.");
   }
 });
 

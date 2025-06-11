@@ -415,9 +415,24 @@ async function adicionarProdutoCarrinho(idProduto) {
             return;
         }
 
-        try {
-            console.log(`Adicionando produto ${idProduto} ao carrinho para o cliente ${idCliente} com quantidade ${quantidade}`);
+        const respostaCarrinhoAtual = await fetch(`http://localhost:3000/carrinho/${idCliente}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        const carrinhoAtual = await respostaCarrinhoAtual.json();
+        const itemExistente = carrinhoAtual.find(item => item.id_produto === idProduto);
 
+        const quantidadeNoCarrinho = itemExistente ? parseInt(itemExistente.qta_carrinho) : 0;
+        const novaQuantidadeTotal = quantidadeNoCarrinho + parseInt(quantidade);
+
+        if (novaQuantidadeTotal > quantidadeValida) {
+            aviso(`Você já adicionou o máximo permitido (${quantidadeValida}) desse produto.`, "alerta");
+            return;
+        }
+
+        try {
             const respostaCarrinho = await fetch(`http://localhost:3000/carrinho`, {
                 method: "POST",
                 headers: {
@@ -497,6 +512,27 @@ async function atualizarCarrinho() {
 
     } catch (erro) {
         console.error("Erro ao atualizar carrinho:", erro);
+    }
+}
+
+async function removerProdutoCarrinho(idProduto) {
+    const idCliente = getCookie("idCliente");
+
+    try {
+        const resposta = await fetch(`http://localhost:3000/carrinho/${idCliente}/${idProduto}`, {
+            method: "DELETE"
+        });
+
+        if (resposta.ok) {
+            aviso("Produto removido do carrinho com sucesso!", "sucesso");
+        } else if (resposta.status === 404) {
+            aviso("Produto não encontrado no carrinho.", "alerta");
+        } else {
+            aviso("Erro ao remover o produto do carrinho.", "erro");
+        }
+    } catch (erro) {
+        console.error("Erro ao remover produto do carrinho:", erro);
+        aviso("Erro de conexão com o servidor!", "erro");
     }
 }
 
