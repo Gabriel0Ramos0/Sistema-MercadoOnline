@@ -1,7 +1,9 @@
 import { realizarLogin, realizarLoginCliente, novaConta, voltarCadastro, solicitarCodigoValidacao, verificarConta } from "./login.js";
-import { carregarDados, sair, adicionarProduto, adicionarProdutoNovo, novaFotoProduto, 
-         salvarEdicao, confirmarExclusao, cancelar, buscarProduto, comprarProduto, 
-         limparCarrinho, finalizarCompraComConfirmacao} from "./inicio.js";
+import {
+    carregarDados, sair, adicionarProduto, adicionarProdutoNovo, novaFotoProduto,
+    salvarEdicao, confirmarExclusao, cancelar, buscarProduto, finalizarCompraComConfirmacao,
+    limparCarrinho
+} from "./inicio.js";
 import { inicializarPopupUsuario, fecharCarrinho } from "./perfil.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -26,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const inputQuantidade = document.querySelector(".quantidade");
     const limparCarrinhoProduto = document.getElementById("limparCarrinho");
     const finalizarCompraCarrinho = document.getElementById("finalizarCompra");
+    
     if (botaoLogin) {
         botaoLogin.addEventListener("click", realizarLogin);
         botaoLoginCliente.addEventListener("click", realizarLoginCliente);
@@ -54,10 +57,9 @@ document.addEventListener("DOMContentLoaded", () => {
         menosProdutos.addEventListener("click", () => {
             inputQuantidade.value = parseInt(inputQuantidade.value) - 1;
         });
-       
         limparCarrinhoProduto.addEventListener("click", limparCarrinho);
     }
     if (finalizarCompraCarrinho) {
-    finalizarCompraCarrinho.addEventListener("click", finalizarCompraComConfirmacao);
-}
+        finalizarCompraCarrinho.addEventListener("click", finalizarCompraComConfirmacao);
+    }
 })

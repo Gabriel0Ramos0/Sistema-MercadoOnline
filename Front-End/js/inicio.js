@@ -385,7 +385,7 @@ function buscarProduto() {
 
 async function adicionarProdutoCarrinho(idProduto) {
     const idCliente = getCookie("idCliente");
-    const quantidade = document.getElementById("quantidadeCarrinho").textContent.trim();
+    const quantidade = document.getElementById(`quantidadeProduto${idProduto}`).value;
 
     if (!idProduto) {
         aviso("Selecione um produto para adicionar ao carrinho!", "alerta");
@@ -401,15 +401,39 @@ async function adicionarProdutoCarrinho(idProduto) {
         });
         const produtos = await resposta.json();
         const produto = produtos.find(p => p.id === idProduto);
-        
+
         if (!produto) {
             aviso("Produto não encontrado!", "alerta");
             return;
         }
 
-        // adicionar try para requisição fetch de post carrinho
+        try {
+            console.log(`Adicionando produto ${idProduto} ao carrinho para o cliente ${idCliente} com quantidade ${quantidade}`);
 
-        aviso(`Produto ${produto.nome} adicionado ao carrinho!`, "sucesso");
+            const respostaCarrinho = await fetch(`http://localhost:3000/carrinho`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id_cliente: idCliente,
+                    id_produto: idProduto,
+                    qta_carrinho: quantidade
+                })
+            });
+            if (respostaCarrinho.ok) {
+                aviso(`Produto ${produto.nome} adicionado ao carrinho!`, "sucesso");
+                atualizarCarrinho();
+            } else if (respostaCarrinho.status === 404) {
+                aviso("Produto não encontrado.", "alerta");
+            } else {
+                aviso("Erro ao adicionar o produto.", "erro");
+            }
+        } catch (error) {
+            console.error("Erro ao adicionar produto ao carrinho:", error);
+            aviso("Erro ao adicionar produto ao carrinho!", "erro");
+            return;
+        }
     } catch (erro) {
         console.error("Erro ao tentar selecionar produto:", erro);
         aviso("Erro de conexão com o servidor!", "erro");
@@ -417,22 +441,57 @@ async function adicionarProdutoCarrinho(idProduto) {
     }
 }
 
-async function comprarProduto() {
-    // aqui voce vai dar consts e pegar os ids que precisa, email, quantidade total...
+atualizarCarrinho();
 
-    const resposta = await fetch("http://localhost:3000/comprar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idProduto, email: emailUsuario, quantidade })
-    });
-    const resultado = await resposta.json();
-    if (resultado.sucesso) {
-        aviso("E-mail de confirmação enviado!", "sucesso");
-    } else {
-        aviso("Erro ao enviar e-mail de confirmação.", "erro");
+async function atualizarCarrinho() {
+    const idCliente = getCookie("idCliente");
+    const listaCarrinho = document.getElementById("listaCarrinho");
+    const quantidadeTotalCarrinho = document.getElementById("quantidadeCarrinho");
+    listaCarrinho.innerHTML = "";
+
+    try {
+        const resposta = await fetch(`http://localhost:3000/carrinho/${idCliente}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        const produtosCarrinho = await resposta.json();
+        let totalQuantidade = 0;
+
+        produtosCarrinho.forEach(item => {
+            const divItem = document.createElement("div");
+            divItem.classList.add("item-carrinho");
+            divItem.setAttribute("data-id-produto", item.id_produto);
+
+            divItem.innerHTML = `
+                <div class="info-produto">
+                    <p class="nome-produto"><strong>${item.nome}</strong></p>
+                    <p class="quantidade">Qtd: ${item.qta_carrinho}</p>
+                </div>
+                <button class="botao remover-produto" data-id="${item.id_produto}">🗑 Remover</button>
+            `;
+
+            totalQuantidade += item.qta_carrinho;
+            listaCarrinho.appendChild(divItem);
+        });
+        quantidadeTotalCarrinho.textContent = totalQuantidade;
+
+        listaCarrinho.querySelectorAll(".remover-produto").forEach(botao => {
+            botao.addEventListener("click", async () => {
+                const idProduto = botao.getAttribute("data-id");
+                await removerProdutoCarrinho(idProduto);
+                atualizarCarrinho();
+            });
+        });
+
+    } catch (erro) {
+        console.error("Erro ao atualizar carrinho:", erro);
     }
 }
-export async function finalizarCompraComConfirmacao() {
+
+async function finalizarCompraComConfirmacao() {
     const idCliente = getCookie("idCliente");
     const emailUsuario = getCookie("email");
 
@@ -478,6 +537,7 @@ async function limparCarrinho() {
 
         if (resposta.ok) {
             aviso("Carrinho Limpo com Sucesso!", "sucesso");
+            atualizarCarrinho();
         } else if (resposta.status === 404) {
             aviso("Produtos no carrinho não encontrado.", "alerta");
         } else {
@@ -491,6 +551,6 @@ async function limparCarrinho() {
 
 export {
     carregarDados, sair, adicionarProduto, adicionarProdutoNovo, novaFotoProduto,
-    salvarEdicao, cancelar, confirmarExclusao, buscarProduto, comprarProduto,
+    salvarEdicao, cancelar, confirmarExclusao, buscarProduto, finalizarCompraComConfirmacao,
     limparCarrinho, getCookie
 }

@@ -269,9 +269,10 @@
 }
 
 #listaCarrinho {
-    height: 280px;
+    height: 272px;
     border-top: 1px solid #ced4da;
     border-bottom: 1px solid #ced4da;
+    overflow-y: auto;
 }
 
 #botoesCarrinho {
@@ -282,4 +283,29 @@
     position: absolute;
     top: 10px;
     right: 10px;
+}
+
+.item-carrinho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #ccc;
+    background-color: #f9f9f9;
+}
+
+.item-carrinho .info-produto {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-carrinho .nome-produto {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.item-carrinho .remover-produto {
+    color: white;
+    background-color: #e74c3c;
+    border: 1px solid #ff1900;
 }

@@ -403,16 +403,13 @@ server.get('/cliente', async (req, res) => {
 // Referente a tabela de carrinho
 
 // Acessar a tabela de carrinho
-server.get('/carrinho', async (req, res) => {
-  const id_cliente = req.query.id_usuario;
+server.get('/carrinho/:id_cliente', async (req, res) => {
+  const id_cliente = req.params;
   try {
-    if (!id_cliente) {
-      return res.status(400).send("Parâmetro 'idcarrinho' é obrigatório.");
-    }
     const [rows] = await pool.query(`
       SELECT * from carrinho   
       WHERE id_cliente = ?   
-    `, [idUsuario]);
+    `, [id_cliente]);
 
     res.json(rows);
 
@@ -426,7 +423,7 @@ server.get('/carrinho', async (req, res) => {
 server.post('/carrinho', async (req, res) => {
   const {id_cliente, id_produto, qta_carrinho } = req.body;
 
-  if (id_cliente, id_produto, qta_carrinho) {
+  if (!id_cliente, !id_produto, !qta_carrinho) {
     return res.status(400).send("Todos os campos são obrigatórios.");
   }
 
