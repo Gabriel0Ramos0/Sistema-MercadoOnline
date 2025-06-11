@@ -17,8 +17,8 @@ const verificarToken = require('./middleware/autenticador');
 const transporterCompra = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'luizfernandomendesalberton@gmail.com',
-    pass: 'ntgh dvkg kbei vril'
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   },
   tls: {
     rejectUnauthorized: false
@@ -26,11 +26,11 @@ const transporterCompra = nodemailer.createTransport({
 });
 
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  database: 'versao-1',
-  port: 3306,
-  password: 'root',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+  password: process.env.DB_PASSWORD
 });
 
 const server = express();
@@ -416,8 +416,8 @@ server.get('/carrinho', async (req, res) => {
 server.post('/carrinho', async (req, res) => {
   const { id, id_cliente, id_produto, qta_carrinho } = req.body;
 
-  if (id, id_cliente, id_produto, qta_carrinho) {
-    return res.status(400).send("Todos os campos são obrigatórios.");
+  if (!id || !id_cliente || !id_produto || !qta_carrinho) {
+  return res.status(400).send("Todos os campos são obrigatórios.");
   }
 
   try {
@@ -456,7 +456,7 @@ server.delete('/carrinho/:id', async (req, res) => {
 });
 
 // Apagar carrinho por cliente completo
-server.delete('/Limpar-carrinho', async (req, res) => {
+server.delete('/Limpar-carrinho/:id_cliente', async (req, res) => {
   const { id_cliente } = req.params;
 
   try {
@@ -663,4 +663,5 @@ const PORTA = 3000;
 server.listen(PORTA, () => { 
   console.log(`Servidor rodando na porta ${PORTA}`);
   console.log('Segredo JWT:', process.env.JWT_SECRET);
+  
 });
