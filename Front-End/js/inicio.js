@@ -384,6 +384,8 @@ function buscarProduto() {
     });
 }
 
+const produtosNoLimite = new Set();
+
 async function adicionarProdutoCarrinho(idProduto) {
     const idCliente = getCookie("idCliente");
     const quantidade = document.getElementById(`quantidadeProduto${idProduto}`).value;
@@ -433,7 +435,12 @@ async function adicionarProdutoCarrinho(idProduto) {
             } else  {
                 atualizarQuantCarrinho(idCliente, idProduto, produto, quantidadeValida);
             }
+            produtosNoLimite.add(idProduto);            
             return;
+        }
+
+        if (quantidadeNoCarrinho === (quantidadeValida - 1) || parseInt(quantidade) === quantidadeValida) {
+            produtosNoLimite.add(idProduto);    
         }
 
         if (itemExistente) {
@@ -479,8 +486,7 @@ async function atualizarCarrinho() {
         });
 
         const produtosCarrinho = await resposta.json();
-        let totalQuantidade = 0;
-        console.log("Produtos no carrinho:", produtosCarrinho);        
+        let totalQuantidade = 0;   
 
         produtosCarrinho.forEach(item => {
             const divItem = document.createElement("div");
@@ -546,6 +552,7 @@ async function removerProdutoCarrinho(idProduto) {
 
         if (resposta.ok) {
             aviso("Produto removido do carrinho com sucesso!", "sucesso");
+            produtosNoLimite.clear();
         } else if (resposta.status === 404) {
             aviso("Produto não encontrado no carrinho.", "alerta");
         } else {
@@ -560,10 +567,9 @@ async function removerProdutoCarrinho(idProduto) {
 async function finalizarCompraComConfirmacao() {
     const idCliente = getCookie("idCliente");
     const emailUsuario = getCookie("email");
-
-    // Pegue os produtos do carrinho (ajuste conforme sua estrutura)
     const listaCarrinho = document.getElementById("listaCarrinho");
     const produtos = [];
+
     listaCarrinho.querySelectorAll(".item-carrinho").forEach(item => {
         const idProduto = item.getAttribute("data-id-produto");
         const quantidade = item.querySelector(".quantidade").textContent || 1;
@@ -586,6 +592,7 @@ async function finalizarCompraComConfirmacao() {
                 if (respostaEmail.ok) {
                     aviso("Compra finalizada com sucesso! E-mail enviado.", "sucesso");
                     atualizarCarrinho();
+                    await removeProdutosSemEstoque();
                     carregarDados();
                 } else {
                     aviso("Erro ao enviar e-mail de confirmação.", "erro");
@@ -618,6 +625,7 @@ async function limparCarrinho() {
 
         if (resposta.ok) {
             aviso("Carrinho Limpo com Sucesso!", "sucesso");
+            produtosNoLimite.clear();
             atualizarCarrinho();
         } else if (resposta.status === 404) {
             aviso("Produtos no carrinho não encontrado.", "alerta");
@@ -628,6 +636,19 @@ async function limparCarrinho() {
         console.error("Erro ao limpar carrinho:", error);
         aviso("Erro de conexão com o servidor!", "erro");
     }
+}
+
+async function removeProdutosSemEstoque() {    
+    for (const idProduto of produtosNoLimite) {
+        try {
+            await fetch(`http://localhost:3000/produto/${idProduto}`, {
+                method: "DELETE"
+            });
+        } catch (erro) {
+            console.error(`Erro de conexão ao remover produto ${idProduto}:`, erro);
+        }
+    }
+    produtosNoLimite.clear();
 }
 
 export {
