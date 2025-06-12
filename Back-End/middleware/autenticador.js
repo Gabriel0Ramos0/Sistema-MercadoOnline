@@ -1,19 +1,11 @@
-const jwt = require("jsonwebtoken");
-const { segredoJWT } = require("..");
-
-// Middleware para verificar o token JWT
 function verificarToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  let token = authHeader && authHeader.split(' ')[1];
+  let token = null;
 
-  // Se não veio no header, tenta pegar do cookie
-  if (!token && req.headers.cookie) {
-    const cookies = req.headers.cookie.split(';').reduce((acc, cookie) => {
-      const [key, value] = cookie.trim().split('=');
-      acc[key] = value;
-      return acc;
-    }, {});
-    token = cookies.token; // pega o token do cookie
+  // Verifica Authorization header
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies && req.cookies.token) { // Se usar cookies e cookie-parser
+    token = req.cookies.token;
   }
 
   if (!token) {

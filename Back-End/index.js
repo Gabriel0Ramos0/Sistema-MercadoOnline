@@ -12,8 +12,6 @@ const jwt = require('jsonwebtoken');
 const segredoJWT = process.env.JWT_SECRET;
 module.exports.segredoJWT = segredoJWT;
 
-const verificarToken = require('./middleware/autenticador');
-
 const transporterCompra = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -537,32 +535,67 @@ server.delete('/finalizar-compra/:id_cliente', async (req, res) => {
   }
 });
 
-// Validar login de cliente
 server.post('/validar-login-cliente', async (req, res) => {
   const { email, senha } = req.body;
 
+  if (!email || !senha) {
+    return res.status(400).json({ 
+      sucesso: false, 
+      mensagem: "Email e senha são obrigatórios." 
+    });
+  }
+
   try {
-    const [cliente] = await pool.query('SELECT * FROM cliente WHERE email = ?', [email]);
+    const [clientes] = await pool.query('SELECT * FROM cliente WHERE email = ?', [email]);
 
-    if (!cliente || cliente.length === 0) {
-      return res.status(400).json({ sucesso: false, mensagem: 'Cliente não encontrado.' });
-    }
-
-    const senhaCorreta = await bcrypt.compare(senha, cliente[0].senha);
-
-    if (senhaCorreta) {
-      res.json({
-        sucesso: true,
-        id: cliente[0].id,
-        nome: cliente[0].nome
+    if (!clientes || clientes.length === 0) {
+      return res.status(401).json({ 
+        sucesso: false, 
+        mensagem: "Credenciais inválidas." 
       });
-    } else {
-      res.status(400).json({ sucesso: false, mensagem: 'Senha incorreta.' });
     }
+
+    const cliente = clientes[0];
+    const senhaCorreta = await bcrypt.compare(senha, cliente.senha);
+
+    if (!senhaCorreta) {
+      return res.status(401).json({ 
+        sucesso: false, 
+        mensagem: "Credenciais inválidas." 
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: cliente.id,
+        nome: cliente.nome,
+        email: cliente.email
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+   
+    const { senha: _, ...dadosCliente } = cliente;
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 3600000
+    });
+
+    res.json({
+      sucesso: true,
+      mensagem: "Login realizado com sucesso!",
+      id: cliente.id,
+      nome: cliente.nome,
+      cliente: dadosCliente,
+      token: token,
+    });
 
   } catch (erro) {
     console.error("Erro ao validar login:", erro);
-    res.status(500).send("Erro no servidor.");
+    res.status(500).json({ sucesso: false, mensagem: "Erro no servidor." });
   }
 });
 

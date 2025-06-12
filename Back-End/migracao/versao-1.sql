@@ -1,8 +1,8 @@
 -- versao-1
 -- Criando o banco de dados:
 
-## Databese: versao-01 para se criado, descomente.
---CREATE DATABASE IF NOT EXISTS `versao-01` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+## Databese: versao-1 para se criado, descomente.
+-- CREATE DATABASE IF NOT EXISTS `versao-1` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
 #Criar Tabela de empresa:
 
