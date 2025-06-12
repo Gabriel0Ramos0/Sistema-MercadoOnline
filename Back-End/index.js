@@ -367,6 +367,7 @@ server.get('/lista-produtos', async (req, res) => {
       FROM produto
       LEFT JOIN imagem ON produto.id_imagem = imagem.id
       INNER JOIN empresa ON produto.id_empresa = empresa.id
+      WHERE produto.quantidade > 0
     `);
 
     res.json(produtos);

@@ -394,8 +394,6 @@ function buscarProduto() {
     });
 }
 
-const produtosNoLimite = new Set();
-
 async function adicionarProdutoCarrinho(idProduto) {
     const token = getCookie("token");
 
@@ -427,7 +425,14 @@ async function adicionarProdutoCarrinho(idProduto) {
         }
 
         if (quantidade <= 0 || quantidade > quantidadeValida) {
-            aviso(`Quantidade inválida! Disponível: ${quantidadeValida}`, "alerta");
+            if (quantidadeValida === 0) {
+                aviso("Produto Esgotado! Atualizando Lista...", "alerta");
+                setTimeout(() => {
+                    carregarDados();
+                }, 4000);
+            } else {
+                aviso(`Quantidade inválida! Disponível: ${quantidadeValida}`, "alerta");
+            }
             return;
         }
 
@@ -446,15 +451,10 @@ async function adicionarProdutoCarrinho(idProduto) {
         if (novaQuantidadeTotal > quantidadeValida) {
             if (quantidadeNoCarrinho === quantidadeValida) {
                 aviso("Você já atingiu o limite máximo deste produto no carrinho.", "alerta");
-            } else  {
+            } else {
                 atualizarQuantCarrinho(idCliente, idProduto, produto, quantidadeValida);
             }
-            produtosNoLimite.add(idProduto);            
             return;
-        }
-
-        if (quantidadeNoCarrinho === (quantidadeValida - 1) || parseInt(quantidade) === quantidadeValida) {
-            produtosNoLimite.add(idProduto);    
         }
 
         if (itemExistente) {
@@ -513,7 +513,7 @@ async function atualizarCarrinho() {
         });
 
         const produtosCarrinho = await resposta.json();
-        let totalQuantidade = 0;   
+        let totalQuantidade = 0;
 
         produtosCarrinho.forEach(item => {
             const divItem = document.createElement("div");
@@ -583,7 +583,6 @@ async function removerProdutoCarrinho(idProduto) {
 
         if (resposta.ok) {
             aviso("Produto removido do carrinho com sucesso!", "sucesso");
-            produtosNoLimite.clear();
         } else if (resposta.status === 404) {
             aviso("Produto não encontrado no carrinho.", "alerta");
         } else {
@@ -599,7 +598,6 @@ async function finalizarCompraComConfirmacao() {
     const token = getCookie("token");
 
     const dadosUsuario = decodificarToken(token);
-
     const idCliente = dadosUsuario.id;
     const emailUsuario = dadosUsuario.email;
     const listaCarrinho = document.getElementById("listaCarrinho");
@@ -607,17 +605,46 @@ async function finalizarCompraComConfirmacao() {
 
     listaCarrinho.querySelectorAll(".item-carrinho").forEach(item => {
         const idProduto = item.getAttribute("data-id-produto");
-        const quantidade = item.querySelector(".quantidade").textContent || 1;
+        const quantidade = parseInt(item.querySelector(".quantidade").textContent || "1");
         produtos.push({ idProduto, quantidade });
     });
 
+    try {
+        const respostaEstoque = await fetch("http://localhost:3000/lista-produtos");
+        const listaEstoque = await respostaEstoque.json();
+
+        let produtosEsgotados = [];
+
+        for (const produto of produtos) {
+            const produtoAtual = listaEstoque.find(p => p.id == produto.idProduto);
+            if (!produtoAtual || produtoAtual.quantidade < produto.quantidade) {
+                produtosEsgotados.push({ id: produto.idProduto, nome: produtoAtual?.nome || `ID ${produto.idProduto}` });
+
+                await fetch(`http://localhost:3000/carrinho/${idCliente}/${produto.idProduto}`, {
+                    method: "DELETE"
+                });
+            }
+        }
+
+        if (produtosEsgotados.length > 0) {
+            aviso("Alguns produtos do seu carrinho foram esgotados ou estão com estoque insuficiente. Eles foram removidos automaticamente para você.", "alerta");
+            atualizarCarrinho();
+            return;
+        }
+
+    } catch (erro) {
+        console.error("Erro ao verificar estoque:", erro);
+        aviso("Erro ao verificar o estoque. Tente novamente.", "erro");
+        return;
+    }
     try {
         const resposta = await fetch(`http://localhost:3000/finalizar-compra/${idCliente}`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" }
         });
-        if (resposta.ok) {            
-            try{
+
+        if (resposta.ok) {
+            try {
                 const respostaEmail = await fetch("http://localhost:3000/enviarEmail", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -627,7 +654,6 @@ async function finalizarCompraComConfirmacao() {
                 if (respostaEmail.ok) {
                     aviso("Compra finalizada com sucesso! E-mail enviado.", "sucesso");
                     atualizarCarrinho();
-                    await removeProdutosSemEstoque();
                     carregarDados();
                 } else {
                     aviso("Erro ao enviar e-mail de confirmação.", "erro");
@@ -637,7 +663,7 @@ async function finalizarCompraComConfirmacao() {
                 aviso("Erro de conexão com o servidor!", "erro");
             }
         } else {
-            aviso("Erro ao enviar e-mail de confirmação.", "erro");
+            aviso("Erro ao concluir a compra no servidor.", "erro");
         }
     } catch (erro) {
         aviso("Erro de conexão com o servidor!", "erro");
@@ -664,7 +690,6 @@ async function limparCarrinho() {
 
         if (resposta.ok) {
             aviso("Carrinho Limpo com Sucesso!", "sucesso");
-            produtosNoLimite.clear();
             atualizarCarrinho();
         } else if (resposta.status === 404) {
             aviso("Produtos no carrinho não encontrado.", "alerta");
@@ -675,19 +700,6 @@ async function limparCarrinho() {
         console.error("Erro ao limpar carrinho:", error);
         aviso("Erro de conexão com o servidor!", "erro");
     }
-}
-
-async function removeProdutosSemEstoque() {    
-    for (const idProduto of produtosNoLimite) {
-        try {
-            await fetch(`http://localhost:3000/produto/${idProduto}`, {
-                method: "DELETE"
-            });
-        } catch (erro) {
-            console.error(`Erro de conexão ao remover produto ${idProduto}:`, erro);
-        }
-    }
-    produtosNoLimite.clear();
 }
 
 export {
