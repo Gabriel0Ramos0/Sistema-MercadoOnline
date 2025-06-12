@@ -471,7 +471,7 @@ async function atualizarCarrinho() {
     const idCliente = getCookie("idCliente");
     const listaCarrinho = document.getElementById("listaCarrinho");
     const quantidadeTotalCarrinho = document.getElementById("quantidadeCarrinho");
-
+    listaCarrinho.innerHTML = "";
     try {
         const resposta = await fetch(`http://localhost:3000/carrinho/${idCliente}`, {
             method: "GET",
