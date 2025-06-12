@@ -42,6 +42,25 @@ async function realizarLogin() {
     }
 }
 
+function decodificarToken(token) {
+    try {
+        const payloadBase64 = token.split('.')[1];
+        // Ajusta base64 para base64 padrão (substitui '-' e '_')
+        const base64 = payloadBase64.replace(/-/g, '+').replace(/_/g, '/');
+        // Decodifica base64 para string JSON
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+            .split('')
+            .map(c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
+            .join('')
+        );
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error('Erro ao decodificar token:', e);
+        return null;
+    }
+}
+
 async function realizarLoginCliente() {
     const email = document.getElementById("emailClienteAcesso").value.trim();
     const senha = document.getElementById("senhaClienteAcesso").value;
@@ -63,12 +82,20 @@ async function realizarLoginCliente() {
         const resultado = await resposta.json();
 
         if (resultado && resultado.sucesso) {
-            const { id, nome } = resultado;
-            aviso("Acesso Autorizado!", "sucesso");
+            const { id , nome, token } = resultado;
 
+            // Decodifica o token manualmente, sem biblioteca
+            const dadosUsuario = decodificarToken(token);
+            console.log(id, nome, token);
+            console.log("Token recebido:", token);
+            console.log("Dados do usuário decodificados:", dadosUsuario);
+
+            aviso("Acesso Autorizado!", "sucesso");
+    
             document.cookie = `idCliente=${id}; path=/; max-age=3600`;
             document.cookie = `nomeCliente=${encodeURIComponent(nome)}; path=/; max-age=3600`;
             document.cookie = `email=${encodeURIComponent(email)}; path=/; max-age=3600`;
+            document.cookie = `token=${encodeURIComponent(token)}; path=/; max-age=3600`;   
 
             setTimeout(() => {
                 window.location.href = "inicio.html";
