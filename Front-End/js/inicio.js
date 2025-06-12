@@ -465,8 +465,6 @@ async function adicionarProdutoCarrinho(idProduto) {
     }
 }
 
-atualizarCarrinho();
-
 async function atualizarCarrinho() {
     const idCliente = getCookie("idCliente");
     const listaCarrinho = document.getElementById("listaCarrinho");
@@ -482,6 +480,7 @@ async function atualizarCarrinho() {
 
         const produtosCarrinho = await resposta.json();
         let totalQuantidade = 0;
+        console.log("Produtos no carrinho:", produtosCarrinho);        
 
         produtosCarrinho.forEach(item => {
             const divItem = document.createElement("div");
@@ -634,5 +633,5 @@ async function limparCarrinho() {
 export {
     carregarDados, sair, adicionarProduto, adicionarProdutoNovo, novaFotoProduto,
     salvarEdicao, cancelar, confirmarExclusao, buscarProduto, finalizarCompraComConfirmacao,
-    limparCarrinho, getCookie
+    limparCarrinho, atualizarCarrinho, getCookie
 }

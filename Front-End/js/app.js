@@ -2,7 +2,7 @@ import { realizarLogin, realizarLoginCliente, novaConta, voltarCadastro, solicit
 import {
     carregarDados, sair, adicionarProduto, adicionarProdutoNovo, novaFotoProduto,
     salvarEdicao, confirmarExclusao, cancelar, buscarProduto, finalizarCompraComConfirmacao,
-    limparCarrinho
+    limparCarrinho, atualizarCarrinho
 } from "./inicio.js";
 import { inicializarPopupUsuario, fecharCarrinho } from "./perfil.js";
 
@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (telaInicio) {
         carregarDados();
+        atualizarCarrinho();
         document.getElementById("sair").addEventListener("click", sair);
         adicionar.addEventListener("click", adicionarProduto);
         produtoNovo.addEventListener("click", adicionarProdutoNovo)

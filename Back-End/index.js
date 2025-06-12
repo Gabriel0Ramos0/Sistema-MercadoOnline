@@ -402,7 +402,7 @@ server.get('/cliente', async (req, res) => {
 
 // Acessar a tabela de carrinho
 server.get('/carrinho/:id_cliente', async (req, res) => {
-  const id_cliente = req.params;
+  const { id_cliente } = req.params;
   try {
     const [rows] = await pool.query(`
       SELECT * from carrinho   
@@ -703,11 +703,6 @@ server.post('/criar-conta-cliente', async (req, res) => {
   }
 });
 
-// No topo do arquivo:
-// No topo do arquivo, já deve ter:
-
-let comprasPendentes = {};
-
 server.post('/enviarEmail', async (req, res) => {
     const { email } = req.body;
     if ( !email ) {
@@ -718,9 +713,29 @@ server.post('/enviarEmail', async (req, res) => {
         await transporterCompra.sendMail({
             from: 'luizfernandomendesalberton@gmail.com',
             to: email,
-            subject: 'Confirme sua compra',
+            subject: 'Compra Confirmada - Mercado Online',
             html: `
-                <p>Olá! Clique no botão abaixo para confirmar sua compra:</p>
+                <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; padding: 20px;">
+                  <h2 style="color: #2E8B57;">Compra Confirmada!</h2>
+                  <p>Olá!</p>
+                  <p>
+                    Recebemos seu pedido com sucesso e estamos cuidando de cada detalhe para que tudo chegue até você com a máxima qualidade.
+                  </p>
+                  <p>
+                    Agradecemos por confiar no <strong>Mercado Online</strong>! 
+                    Sua compra faz parte do nosso propósito de oferecer uma experiência prática, segura e agradável.
+                  </p>
+                  <p>
+                    Em breve, você receberá atualizações sobre o status do seu pedido.
+                  </p>
+                  <p>
+                    Qualquer dúvida, estamos à disposição.
+                  </p>
+                  <p style="margin-top: 30px;">
+                    Atenciosamente,<br />
+                    <strong>Equipe Mercado Online</strong>
+                  </p>
+                </div>
             `
         });
         res.json({ sucesso: true });
@@ -728,20 +743,6 @@ server.post('/enviarEmail', async (req, res) => {
         console.error("Erro ao enviar e-mail de confirmação:", erro);
         res.status(500).json({ sucesso: false, mensagem: "Erro ao enviar e-mail." });
     }
-});
-
-// Rota para confirmar a compra
-server.get('/confirmar-compra/:token', async (req, res) => {
-    const { token } = req.params;
-    const compra = comprasPendentes[token];
-    if (!compra) {
-        return res.send("Token inválido ou expirado.");
-    }
-
-    // Aqui finalize a compra no banco de dados, limpe o carrinho, etc.
-    delete comprasPendentes[token];
-
-    res.send("Compra confirmada com sucesso! Obrigado.");
 });
 
 const PORTA = 3000;
