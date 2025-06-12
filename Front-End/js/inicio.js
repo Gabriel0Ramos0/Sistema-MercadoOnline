@@ -1,4 +1,4 @@
-import { aviso } from "./login.js";
+import { decodificarToken, aviso } from "./login.js";
 
 function getCookie(nome) {
     const cookies = document.cookie.split("; ");
@@ -18,7 +18,18 @@ function carregarDados() {
     const nomeEmpresa = getCookie("empresa");
     const idEmpresa = getCookie("idEmpresa");
     const nomeUsuario = getCookie("nome");
-    const nomeCliente = getCookie("nomeCliente");
+    const token = getCookie("token");
+    let dadosUsuario = null;
+    let nomeCliente = null;
+
+    if (token) {
+        try {
+            dadosUsuario = decodificarToken(token);
+            nomeCliente = dadosUsuario.nome;
+        } catch (erro) {
+            console.error("Erro ao decodificar o token:", erro);
+        }
+    }
 
     const nome = nomeUsuario || nomeCliente;
 
@@ -43,11 +54,10 @@ function carregarDados() {
 }
 
 function sair() {
-    document.cookie = "nomeCliente=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie = "idCliente=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "idEmpresa=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "empresa=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "nome=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     document.cookie = "id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     aviso("Logoff realizado com Sucesso!", "sucesso");
@@ -387,7 +397,11 @@ function buscarProduto() {
 const produtosNoLimite = new Set();
 
 async function adicionarProdutoCarrinho(idProduto) {
-    const idCliente = getCookie("idCliente");
+    const token = getCookie("token");
+
+    const dadosUsuario = decodificarToken(token);
+
+    const idCliente = dadosUsuario.id;
     const quantidade = document.getElementById(`quantidadeProduto${idProduto}`).value;
 
     if (!idProduto) {
@@ -473,7 +487,20 @@ async function adicionarProdutoCarrinho(idProduto) {
 }
 
 async function atualizarCarrinho() {
-    const idCliente = getCookie("idCliente");
+    const token = getCookie("token");
+
+    let dadosUsuario = null;
+    let idCliente = null;
+
+    if (token) {
+        try {
+            dadosUsuario = decodificarToken(token);
+            idCliente = dadosUsuario.id;
+        } catch (erro) {
+            console.error("Erro ao decodificar o token:", erro);
+        }
+    }
+
     const listaCarrinho = document.getElementById("listaCarrinho");
     const quantidadeTotalCarrinho = document.getElementById("quantidadeCarrinho");
     listaCarrinho.innerHTML = "";
@@ -543,7 +570,11 @@ async function atualizarQuantCarrinho(idCliente, idProduto, produto, novaQuantid
 }
 
 async function removerProdutoCarrinho(idProduto) {
-    const idCliente = getCookie("idCliente");
+    const token = getCookie("token");
+
+    const dadosUsuario = decodificarToken(token);
+
+    const idCliente = dadosUsuario.id;
 
     try {
         const resposta = await fetch(`http://localhost:3000/carrinho/${idCliente}/${idProduto}`, {
@@ -565,8 +596,12 @@ async function removerProdutoCarrinho(idProduto) {
 }
 
 async function finalizarCompraComConfirmacao() {
-    const idCliente = getCookie("idCliente");
-    const emailUsuario = getCookie("email");
+    const token = getCookie("token");
+
+    const dadosUsuario = decodificarToken(token);
+
+    const idCliente = dadosUsuario.id;
+    const emailUsuario = dadosUsuario.email;
     const listaCarrinho = document.getElementById("listaCarrinho");
     const produtos = [];
 
@@ -610,7 +645,11 @@ async function finalizarCompraComConfirmacao() {
 }
 
 async function limparCarrinho() {
-    const id = getCookie("idCliente");
+    const token = getCookie("token");
+
+    const dadosUsuario = decodificarToken(token);
+
+    const id = dadosUsuario.id;
     const listaCarrinho = document.getElementById("listaCarrinho");
 
     if (!listaCarrinho || listaCarrinho.children.length === 0) {

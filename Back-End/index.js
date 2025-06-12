@@ -1,6 +1,5 @@
 require('dotenv').config();
 
-const http = require('http');
 const express = require('express');
 const fs = require('fs');
 const mysql = require("mysql2/promise");
@@ -587,8 +586,6 @@ server.post('/validar-login-cliente', async (req, res) => {
     res.json({
       sucesso: true,
       mensagem: "Login realizado com sucesso!",
-      id: cliente.id,
-      nome: cliente.nome,
       cliente: dadosCliente,
       token: token,
     });

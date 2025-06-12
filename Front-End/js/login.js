@@ -82,19 +82,10 @@ async function realizarLoginCliente() {
         const resultado = await resposta.json();
 
         if (resultado && resultado.sucesso) {
-            const { id , nome, token } = resultado;
-
-            // Decodifica o token manualmente, sem biblioteca
-            const dadosUsuario = decodificarToken(token);
-            console.log(id, nome, token);
-            console.log("Token recebido:", token);
-            console.log("Dados do usuário decodificados:", dadosUsuario);
+            const { token } = resultado;
 
             aviso("Acesso Autorizado!", "sucesso");
-    
-            document.cookie = `idCliente=${id}; path=/; max-age=3600`;
-            document.cookie = `nomeCliente=${encodeURIComponent(nome)}; path=/; max-age=3600`;
-            document.cookie = `email=${encodeURIComponent(email)}; path=/; max-age=3600`;
+            
             document.cookie = `token=${encodeURIComponent(token)}; path=/; max-age=3600`;   
 
             setTimeout(() => {
@@ -217,4 +208,5 @@ window.addEventListener("keydown", (event) => {
     }
 });
 
-export { realizarLogin, realizarLoginCliente, novaConta, voltarCadastro, solicitarCodigoValidacao, verificarConta, aviso }
+export { realizarLogin, realizarLoginCliente, novaConta, voltarCadastro, solicitarCodigoValidacao, 
+    verificarConta, decodificarToken, aviso }

@@ -1,5 +1,6 @@
 import { getCookie } from "./inicio.js";
-import { aviso } from "./login.js";
+import { decodificarToken, aviso } from "./login.js";
+
 export function inicializarPopupUsuario() {
   const iconeUsuario = document.getElementById('iconeUsuario');
   const profilePopup = document.getElementById('profilePopup');
@@ -10,7 +11,20 @@ export function inicializarPopupUsuario() {
   const fotoPreview = document.getElementById('popupAvatar');
 
   const idEmpresa = getCookie("idEmpresa");
-  const nomeCliente = getCookie("nomeCliente");
+
+  const token = getCookie("token");
+
+  let dadosUsuario = null;
+  let nomeCliente = null;
+
+  if (token) {
+      try {
+          dadosUsuario = decodificarToken(token);
+          nomeCliente = dadosUsuario.nome;
+      } catch (erro) {
+          console.error("Erro ao decodificar o token:", erro);
+      }
+  }
 
   if (!idEmpresa && nomeCliente) {
     iconeUsuario.src = "./assets/icone/carrinho.png";
