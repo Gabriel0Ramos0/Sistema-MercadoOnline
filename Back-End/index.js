@@ -708,17 +708,11 @@ server.post('/criar-conta-cliente', async (req, res) => {
 
 let comprasPendentes = {};
 
-server.post('/comprar', async (req, res) => {
-    console.log("REQ BODY:", req.body); // Veja o que chega!
-    const { idCliente, email, produtos } = req.body;
-    if (!idCliente || !email || !produtos || !produtos.length) {
+server.post('/enviarEmail', async (req, res) => {
+    const { email } = req.body;
+    if ( !email ) {
         return res.status(400).json({ sucesso: false, mensagem: "Dados inválidos." });
     }
-
-    const token = uuidv4();
-    comprasPendentes[token] = { idCliente, email, produtos }; // Salve os produtos!
-
-    const linkConfirmacao = `http://localhost:3000/confirmar-compra/${token}`;
 
     try {
         await transporterCompra.sendMail({
@@ -727,7 +721,6 @@ server.post('/comprar', async (req, res) => {
             subject: 'Confirme sua compra',
             html: `
                 <p>Olá! Clique no botão abaixo para confirmar sua compra:</p>
-                <a href="${linkConfirmacao}" style="padding:10px 20px;background:#7749f8;color:#fff;text-decoration:none;border-radius:5px;">Confirmar Compra</a>
             `
         });
         res.json({ sucesso: true });

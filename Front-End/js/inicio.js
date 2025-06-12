@@ -471,7 +471,6 @@ async function atualizarCarrinho() {
     const idCliente = getCookie("idCliente");
     const listaCarrinho = document.getElementById("listaCarrinho");
     const quantidadeTotalCarrinho = document.getElementById("quantidadeCarrinho");
-    listaCarrinho.innerHTML = "";
 
     try {
         const resposta = await fetch(`http://localhost:3000/carrinho/${idCliente}`, {
@@ -573,14 +572,29 @@ async function finalizarCompraComConfirmacao() {
     });
 
     try {
-        const resposta = await fetch("http://localhost:3000/comprar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ idCliente, email: emailUsuario, produtos })
+        const resposta = await fetch(`http://localhost:3000/finalizar-compra/${idCliente}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
         });
-        const resultado = await resposta.json();
-        if (resultado.sucesso) {
-            aviso("E-mail de confirmação enviado!", "sucesso");
+        if (resposta.ok) {            
+            try{
+                const respostaEmail = await fetch("http://localhost:3000/enviarEmail", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: emailUsuario })
+                });
+
+                if (respostaEmail.ok) {
+                    aviso("Compra finalizada com sucesso! E-mail enviado.", "sucesso");
+                    atualizarCarrinho();
+                    carregarDados();
+                } else {
+                    aviso("Erro ao enviar e-mail de confirmação.", "erro");
+                }
+            } catch (erro) {
+                console.error("Erro ao enviar e-mail:", erro);
+                aviso("Erro de conexão com o servidor!", "erro");
+            }
         } else {
             aviso("Erro ao enviar e-mail de confirmação.", "erro");
         }
