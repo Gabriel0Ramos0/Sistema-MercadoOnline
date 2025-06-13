@@ -416,12 +416,12 @@ server.get('/carrinho/:id_cliente', async (req, res) => {
     res.status(500).send("Erro ao buscar carrinho");
   }
 });
-
+const lembretesCarrinho = {}; // { id_cliente: timeout }
 // Adcionar produto ao carrinho
 server.post('/carrinho', async (req, res) => {
-  const {id_cliente, id_produto, nome, qta_carrinho } = req.body;
+  const { id_cliente, id_produto, nome, qta_carrinho } = req.body;
 
-  if (!id_cliente, !id_produto, !nome, !qta_carrinho) {
+  if (!id_cliente || !id_produto || !nome || !qta_carrinho) {
     return res.status(400).send("Todos os campos são obrigatórios.");
   }
 
@@ -431,9 +431,39 @@ server.post('/carrinho', async (req, res) => {
       [id_cliente, id_produto, nome, qta_carrinho]
     );
 
+    // --- AGENDAR LEMBRETE AUTOMÁTICO ---
+    if (lembretesCarrinho[id_cliente]) {
+  clearTimeout(lembretesCarrinho[id_cliente]);
+}
+
+const [[cliente]] = await pool.query('SELECT email FROM cliente WHERE id = ?', [id_cliente]);
+if (cliente && cliente.email) {
+ lembretesCarrinho[id_cliente] = setTimeout(async () => {
+  console.log("Disparando lembrete para:", cliente.email);
+try {
+  const [carrinho] = await pool.query('SELECT * FROM carrinho WHERE id_cliente = ?', [id_cliente]);
+  if (carrinho.length > 0) {
+    await transporterCompra.sendMail({
+      from: 'luizfernandomendesalberton@gmail.com',
+      to: cliente.email,
+      subject: "Você esqueceu algo no carrinho 🛒",
+      html: `<p>Notamos que você deixou produtos no carrinho. Ainda está pensando? Volte e finalize sua compra!</p>`
+    });
+    console.log("E-mail de lembrete enviado para:", cliente.email);
+  } else {
+    console.log("Carrinho vazio, não enviou lembrete.");
+  }
+} catch (erro) {
+  console.error("Erro ao enviar lembrete:", erro);
+}
+  delete lembretesCarrinho[id_cliente];
+}, 5000); // 10 segundos
+}
+    // --- FIM DO AGENDAMENTO ---
+
     res.status(201).json({
       mensagem: "carrinho cadastrado com sucesso!",
-      usuario: { id: result.insertId,id_cliente, id_produto, nome, qta_carrinho }
+      usuario: { id: result.insertId, id_cliente, id_produto, nome, qta_carrinho }
     });
 
   } catch (err) {
