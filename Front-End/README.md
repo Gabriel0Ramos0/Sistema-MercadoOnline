@@ -81,7 +81,7 @@ Um sistema completo de vendas online que integra funcionalidades essenciais como
 
 4. Inicie o servidor:
    ```bash
-   node server.js
+   node index.js
 5. Abra `frontend/login.html` no navegador para acessar a interface.
 
 ---
@@ -96,5 +96,5 @@ Um sistema completo de vendas online que integra funcionalidades essenciais como
   **Contato:** [GitHub](https://github.com/Lucas0Lima21) & [Linkedin](https://www.linkedin.com/in/lucas-lima-l2023l/?originalSubdomain=br).
 
 - **Luiz Fernando Mendes Alberton**  
-  Responsável pela funcionalidade de envio de e-mails utilizando `nodemailer`, apoio técnico no desenvolvimento do Back-End, contribuição na lógica das funcionalidades, suporte na instalação de bibliotecas e testes do sistema. 
+  Responsável pela funcionalidade de envio de e-mails utilizando `nodemailer`, criação do perfil do administrador, apoio técnico no desenvolvimento do Back-End, contribuição na lógica das funcionalidades, suporte na instalação de bibliotecas e testes do sistema. 
   **Contato:** [GitHub](https://github.com/luizfernandomendesalberton) & [Linkedin](https://www.linkedin.com/in/luiz-fernando-mendes-alberton-4b1063178/).
