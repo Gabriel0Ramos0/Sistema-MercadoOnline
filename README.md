@@ -7,31 +7,31 @@ Um sistema completo de vendas online que integra funcionalidades essenciais como
 ## Demonstrações Visuais
 
 ### Tela de Login
-![Login](./assets/print/tela-login.jpeg)
+![Login](./Front-End/assets/print/tela-login.jpeg)
 > Acesso seguro com validação de email e senha. Autenticação protegida por token JWT.
 
 ---
 
 ### Criação de Conta Cliente
-![cliente](./assets/print/tela-cadastro-cliente.jpeg)
+![cliente](./Front-End/assets/print/tela-cadastro-cliente.jpeg)
 > Cadastro com validação de e-mail via código, garantindo segurança e identificação do usuário.
 
 ---
 
 ### Painel Administrativo
-![Produtos](./assets/print/tela-administrativo.jpeg)
+![Produtos](./Front-End/assets/print/tela-administrativo.jpeg)
 > Visualização dos produtos cadastrados, com opções de edição, exclusão e monitoramento de estoque. Print com zoom de 90%.
 
 ---
 
 ### Página Principal do Cliente
-![Produtos](./assets/print/tela-produtos-cliente.jpeg)
+![Produtos](./Front-End/assets/print/tela-produtos-cliente.jpeg)
 > Catálogo interativo onde os clientes podem visualizar produtos, ajustar quantidades e adicionar ao carrinho. Print com zoom de 90%.
 
 ---
 
 ### Carrinho de Compras do Cliente
-![Carrinho](./assets/print/tela-carrinho.jpeg)
+![Carrinho](./Front-End/assets/print/tela-carrinho.jpeg)
 > Carrinho dinâmico com controle de quantidades, verificação de estoque em tempo real e feedbacks visuais.
 
 ---
