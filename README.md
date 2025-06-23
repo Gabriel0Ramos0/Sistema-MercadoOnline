@@ -72,7 +72,7 @@ Um sistema completo de vendas online que integra funcionalidades essenciais como
 ## 💡 Como Executar Localmente
 1. Clone o repositório:
    ```bash
-   git clone https: caminho do projeto .git
+   git clone https: https://github.com/Gabriel0Ramos0/Sistema-MercadoOnline.git
 2. Instale as dependências do backend:
    ```bash 
    cd backend
@@ -88,13 +88,19 @@ Um sistema completo de vendas online que integra funcionalidades essenciais como
 
 ## 💡 Autores
 - **Gabriel Ramos Corrêa**  
-  Desenvolvimento Full Stack, estrutura geral do sistema, integração de funcionalidades e interface com o usuário.
+  Desenvolvimento Full Stack, estrutura geral do sistema, integração de funcionalidades e interface com o usuário.  
   **Contato:** [GitHub](https://github.com/Gabriel0Ramos0) & [Linkedin](https://www.linkedin.com/in/gabriel-ramos-18531a259/)
 
 - **Lucas Leandro Lima**  
-  Responsável pelo Back-End, manipulação dos dados, integração com o banco de dados MySQL e instalação/configuração dos pacotes essenciais do Node.js.
+  Responsável pelo Back-End, manipulação dos dados, integração com o banco de dados MySQL e instalação/configuração dos pacotes essenciais do Node.js.  
   **Contato:** [GitHub](https://github.com/Lucas0Lima21) & [Linkedin](https://www.linkedin.com/in/lucas-lima-l2023l/?originalSubdomain=br).
 
 - **Luiz Fernando Mendes Alberton**  
-  Responsável pela funcionalidade de envio de e-mails utilizando `nodemailer`, criação do perfil do administrador, apoio técnico no desenvolvimento do Back-End, contribuição na lógica das funcionalidades, suporte na instalação de bibliotecas e testes do sistema. 
+  Responsável pela funcionalidade de envio de e-mails utilizando `nodemailer`, criação do perfil do administrador, apoio técnico no desenvolvimento do Back-End, contribuição na lógica das funcionalidades, suporte na instalação de bibliotecas e testes do sistema.  
   **Contato:** [GitHub](https://github.com/luizfernandomendesalberton) & [Linkedin](https://www.linkedin.com/in/luiz-fernando-mendes-alberton-4b1063178/).
+
+---
+
+- **Prof. Welquer Kestering Esser**  
+   Orientador e Mentor do Projeto. Responsável pela condução da disciplina, direcionamento técnico, pedagógico e avaliação dos alunos.  
+   **Contato:** [GitHub](https://github.com/Welquer)
